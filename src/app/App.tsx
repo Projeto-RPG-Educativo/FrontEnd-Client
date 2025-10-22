@@ -13,16 +13,16 @@ import {
 } from '../components/index';
 
 // screens
-import { Auth, MainMenu, } from '../screen/index';
+import { Auth, MainMenu, ClassSelection } from '../screen/index';
 
 // hooks 
-import { MenuLogic, SaveLogic, } from '../hooks/index'
+import { MenuLogic, SaveLogic } from '../hooks/index'
 
 const App: React.FC = () => {
   const { isLoggedIn, logout } = useContext(AuthContext);
   const { gameState: gamestate, setGameState, setDifficulty } = useGame();
   const { handleStartNewGame, toggleSettings } = MenuLogic({ setGameState, setDifficulty });
-  const { slots, isLoading, error, fetchSaves, handleLoadGame } = SaveLogic({ setPlayer: () => {}, setGameState });
+  const { slots, isLoading, error, fetchSaves, handleLoadGame } = SaveLogic({ setPlayer: () => { }, setGameState });
 
   if (!isLoggedIn) {
     return <Auth />;
@@ -34,20 +34,23 @@ const App: React.FC = () => {
         return <MainMenu
           onStartNewGame={handleStartNewGame}
           onGoToSettings={toggleSettings}
-          onLogout={logout} 
-          slots={slots} 
-          isLoadingSaves={isLoading} 
-          errorSaves={error} 
-          onFetchSaves={fetchSaves} 
+          onLogout={logout}
+          slots={slots}
+          isLoadingSaves={isLoading}
+          errorSaves={error}
+          onFetchSaves={fetchSaves}
           onLoadGame={handleLoadGame}
-           />;
+        />;
+
+      case 'CLASS_SELECTION':
+        return <ClassSelection />;
 
       default:
         return null;
     }
   };
 
-  return(
+  return (
     <>
       {renderGameContent()}
     </>
