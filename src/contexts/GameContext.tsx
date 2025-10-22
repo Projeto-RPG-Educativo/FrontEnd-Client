@@ -1,9 +1,13 @@
 import React, { createContext, useContext, useState, type ReactNode } from 'react';
+import type { Player } from '../types';
 
 export type GameState = 
   | 'MENU'
-  | 'CLASS_SELECTION' 
+  | 'CLASS_SELECTION'
+  | 'HUB'
 ;
+
+
 
 export type Difficulty = 'facil' | 'medio' | 'dificil';
 
@@ -13,6 +17,10 @@ interface GameContextType {
   setGameState: (state: GameState) => void;
   difficulty: Difficulty;
   setDifficulty: (difficulty: Difficulty) => void;
+  player: Player | null;
+  setPlayer: (player: Player | null) => void;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -29,12 +37,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Estados principais
   const [gameState, setGameState] = useState<GameState>('MENU');
   const [difficulty, setDifficulty] = useState<Difficulty>('facil');
+  const [player, setPlayer] = useState<Player | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const value: GameContextType = {
     gameState,
     setGameState,
     difficulty,
     setDifficulty,
+    player,
+    setPlayer,
+    isLoading,
+    setIsLoading,
   };
     return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
 };

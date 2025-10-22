@@ -6,6 +6,8 @@ export { default as Settings } from './menu/settings/Settings';
 export { default as Auth} from './user/auth/Auth';
 export { default as Login } from './user/login/Login';
 export { default as Register } from './user/register/Register';
+export { default as ClassSelection } from './classSelection/ClassSelection';
+
 
 export { useLoadGame } from './menu/loadGame/useLoadGame';
 export { useNewGame } from './menu/newGame/useNewGame';

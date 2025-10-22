@@ -1,47 +1,12 @@
 import api from '../api/api';
-import type { Player, ClassName } from '../../types/Character';
-
-// ==================== INTERFACES ====================
-export interface CreateCharacterRequest {
-  nome: string;
-  classe: ClassName;
-}
-
-export interface UpdateCharacterRequest {
-  nome?: string;
-  classe?: ClassName;
-  hp?: number;
-  maxHp?: number;
-  stamina?: number;
-  maxStamina?: number;
-  level?: number;
-  coins?: number;
-}
-
-export interface CharacterResponse {
-  id: number;
-  userId: number;
-  nome: string;
-  classe: string;
-  image?: string;
-  hp: number;
-  maxHp: number;
-  stamina: number;
-  maxStamina: number;
-  level: number;
-  coins: number;
-  createdAt: string;
-}
-
-// Interface para as classes disponíveis
-export interface ClassResponse {
-  id: number;
-  name: string;
-  hp: number;
-  stamina: number | null;
-  strength: number | null;
-  intelligence: number | null;
-}
+import type { 
+  Player, 
+  ClassName,
+  CreateCharacterRequest,
+  UpdateCharacterRequest,
+  CharacterResponse,
+  ClassResponse
+} from '../../types/Character';
 
 // Alias para Character (compatibilidade com hooks)
 export type Character = CharacterResponse;

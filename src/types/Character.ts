@@ -76,3 +76,43 @@ export interface UpdateCharacterRequest {
   coins?: number;
 }
 
+// ==================== API Response Types ====================
+export interface CharacterResponse {
+  id: number;
+  userId: number;
+  nome: string;
+  classe: string;
+  image?: string;
+  hp: number;
+  maxHp: number;
+  stamina: number;
+  maxStamina: number;
+  level: number;
+  coins: number;
+  createdAt: string;
+}
+
+// Interface para as classes disponíveis (do backend)
+export interface ClassResponse {
+  id: number;
+  name: string;
+  hp: number;
+  stamina: number;
+  strength: number;
+  intelligence: number;
+}
+
+// ==================== Frontend Class Data ====================
+// Tipo para dados da classe combinando backend + frontend
+export interface FullClassData {
+  id: number;
+  name: ClassName;
+  backendName: string;
+  description?: string;
+  image?: string;
+  hp: number;
+  stamina: number;
+  strength: number;
+  intelligence: number;
+}
+
