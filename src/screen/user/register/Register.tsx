@@ -9,24 +9,24 @@ interface RegisterScreenProps {
 
 const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onGoToLogin }) => {
   const {
-    nome,
+    name,
     email,
-    senha,
-    confirmarSenha,
-    erro,
-    sucesso,
-    carregando,
-    formularioValido,
-    setNome,
+    password,
+    confirmPassword,
+    error,
+    success,
+    loading,
+    isFormValid,
+    setName,
     setEmail,
-    setSenha,
-    setConfirmarSenha,
-    fazerRegistro,
+    setPassword,
+    setConfirmPassword,
+    handleRegister,
   } = useRegister();
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegisterForm = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fazerRegistro(onRegisterSuccess);
+    await handleRegister(onRegisterSuccess);
   };
 
   return (
@@ -34,14 +34,14 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onGo
       <S.FormWrapper>
         <S.Title>REGISTRAR</S.Title>
         
-        <S.Form onSubmit={handleRegister}>
+        <S.Form onSubmit={handleRegisterForm}>
           <S.InputGroup>
             <label htmlFor="name">Nome de Usuário</label>
             <S.Input 
               id="name" 
               type="text" 
-              value={nome} 
-              onChange={(e) => setNome(e.target.value)}
+              value={name} 
+              onChange={(e) => setName(e.target.value)}
               placeholder="Digite seu nome de usuário"
               autoComplete="username"
               required 
@@ -67,8 +67,8 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onGo
             <S.Input 
               id="password" 
               type="password" 
-              value={senha} 
-              onChange={(e) => setSenha(e.target.value)}
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Digite sua senha (mín. 6 caracteres)"
               autoComplete="new-password"
               required 
@@ -81,8 +81,8 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onGo
             <S.Input 
               id="confirmPassword" 
               type="password" 
-              value={confirmarSenha} 
-              onChange={(e) => setConfirmarSenha(e.target.value)}
+              value={confirmPassword} 
+              onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirme sua senha"
               autoComplete="new-password"
               required 
@@ -90,18 +90,18 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onGo
             />
           </S.InputGroup>
 
-          {erro && <S.ErrorMessage>{erro}</S.ErrorMessage>}
-          {sucesso && <S.SuccessMessage>{sucesso}</S.SuccessMessage>}
+          {error && <S.ErrorMessage>{error}</S.ErrorMessage>}
+          {success && <S.SuccessMessage>{success}</S.SuccessMessage>}
 
           <S.SubmitButton 
             type="submit" 
-            disabled={carregando || !formularioValido}
+            disabled={loading || !isFormValid}
           >
-            {carregando ? 'CRIANDO...' : 'CRIAR CONTA'}
+            {loading ? 'CRIANDO...' : 'CRIAR CONTA'}
           </S.SubmitButton>
         </S.Form>
 
-        <S.SecondaryButton onClick={onGoToLogin} disabled={carregando}>
+        <S.SecondaryButton onClick={onGoToLogin} disabled={loading}>
           Já tem uma conta? Faça Login
         </S.SecondaryButton>
       </S.FormWrapper>

@@ -1,24 +1,24 @@
 import { useState, useCallback } from 'react';
-import { useAuth } from '../../../services/auth/useAuth';
+import { useAuth } from '../../../hooks/auth/useAuth';
 
 interface UseRegisterReturn {
   // Estados do formulário
-  nome: string;
+  name: string;
   email: string;
-  senha: string;
-  confirmarSenha: string;
-  erro: string | null;
-  sucesso: string | null;
-  carregando: boolean;
-  formularioValido: boolean;
+  password: string;
+  confirmPassword: string;
+  error: string | null;
+  success: string | null;
+  loading: boolean;
+  isFormValid: boolean;
   
   // Ações
-  setNome: (nome: string) => void;
+  setName: (nome: string) => void;
   setEmail: (email: string) => void;
-  setSenha: (senha: string) => void;
-  setConfirmarSenha: (senha: string) => void;
-  fazerRegistro: (onSuccess: () => void) => Promise<void>;
-  limparMensagens: () => void;
+  setPassword: (senha: string) => void;
+  setConfirmPassword: (senha: string) => void;
+  handleRegister: (onSuccess: () => void) => Promise<void>;
+  clearMessages: () => void;
 }
 
 /**
@@ -30,24 +30,24 @@ interface UseRegisterReturn {
  * ```tsx
  * const RegisterScreen = () => {
  *   const {
- *     nome,
+ *     name,
  *     email,
- *     senha,
- *     confirmarSenha,
- *     erro,
- *     sucesso,
- *     carregando,
- *     formularioValido,
- *     setNome,
+ *     password,
+ *     confirmPassword,
+ *     error,
+ *     success,
+ *     loading,
+ *     isFormValid,
+ *     setName,
  *     setEmail,
- *     setSenha,
- *     setConfirmarSenha,
- *     fazerRegistro,
- *   } = useRegisterScreen();
+ *     setPassword,
+ *     setConfirmPassword,
+ *     handleRegister,
+ *   } = useRegister();
  * 
  *   const handleSubmit = async (e: React.FormEvent) => {
  *     e.preventDefault();
- *     await fazerRegistro(() => {
+ *     await handleRegister(() => {
  *       // Redirecionar para login
  *     });
  *   };
@@ -55,86 +55,86 @@ interface UseRegisterReturn {
  * ```
  */
 export const useRegister = (): UseRegisterReturn => {
-  const [nome, setNomeState] = useState('');
+  const [name, setNameState] = useState('');
   const [email, setEmailState] = useState('');
-  const [senha, setSenhaState] = useState('');
-  const [confirmarSenha, setConfirmarSenhaState] = useState('');
-  const [sucesso, setSucesso] = useState<string | null>(null);
+  const [password, setPasswordState] = useState('');
+  const [confirmPassword, setConfirmPasswordState] = useState('');
+  const [success, setSuccess] = useState<string | null>(null);
   
-  const { fazerRegistro: registerService, carregando, erro, limparErro } = useAuth();
+  const { handleRegister: registerService, loading, error, clearError } = useAuth();
 
   // Validação do formulário
-  const formularioValido = 
-    nome.trim().length >= 3 &&
+  const isFormValid = 
+    name.trim().length >= 3 &&
     email.includes('@') &&
-    senha.length >= 6 &&
-    senha === confirmarSenha;
+    password.length >= 6 &&
+    password === confirmPassword;
 
   // Limpa mensagens de erro e sucesso
-  const limparMensagens = useCallback(() => {
-    limparErro();
-    setSucesso(null);
-  }, [limparErro]);
+  const clearMessages = useCallback(() => {
+    clearError();
+    setSuccess(null);
+  }, [clearError]);
 
   // Setters que limpam mensagens
-  const setNome = useCallback((novoNome: string) => {
-    setNomeState(novoNome);
-    limparMensagens();
-  }, [limparMensagens]);
+  const setName = useCallback((novoNome: string) => {
+    setNameState(novoNome);
+    clearMessages();
+  }, [clearMessages]);
 
   const setEmail = useCallback((novoEmail: string) => {
     setEmailState(novoEmail);
-    limparMensagens();
-  }, [limparMensagens]);
+    clearMessages();
+  }, [clearMessages]);
 
-  const setSenha = useCallback((novaSenha: string) => {
-    setSenhaState(novaSenha);
-    limparMensagens();
-  }, [limparMensagens]);
+  const setPassword = useCallback((novaSenha: string) => {
+    setPasswordState(novaSenha);
+    clearMessages();
+  }, [clearMessages]);
 
-  const setConfirmarSenha = useCallback((novaSenha: string) => {
-    setConfirmarSenhaState(novaSenha);
-    limparMensagens();
-  }, [limparMensagens]);
+  const setConfirmPassword = useCallback((novaSenha: string) => {
+    setConfirmPasswordState(novaSenha);
+    clearMessages();
+  }, [clearMessages]);
 
   // Fazer registro
-  const fazerRegistro = useCallback(async (
+  const handleRegister = useCallback(async (
     onSuccess: () => void
   ) => {
-    if (!formularioValido) {
+    if (!isFormValid) {
       return;
     }
 
     const resultado = await registerService(
-      nome.trim(),
+      name.trim(),
       email.trim().toLowerCase(),
-      senha
+      password
     );
     
     if (resultado) {
-      setSucesso('Registro bem-sucedido! Redirecionando para o login...');
+      setSuccess('Registro bem-sucedido! Redirecionando para o login...');
       
       // Delay para mostrar mensagem de sucesso
       setTimeout(() => {
         onSuccess();
       }, 2000);
     }
-  }, [nome, email, senha, formularioValido, registerService]);
+  }, [name, email, password, isFormValid, registerService]);
 
   return {
-    nome,
+    name,
     email,
-    senha,
-    confirmarSenha,
-    erro: erro ? erro.message : null,
-    sucesso,
-    carregando,
-    formularioValido,
-    setNome,
+    password,
+    confirmPassword,
+    error: error ? error.message : null,
+    success,
+    loading,
+    isFormValid,
+    setName,
     setEmail,
-    setSenha,
-    setConfirmarSenha,
-    fazerRegistro,
-    limparMensagens,
+    setPassword,
+    setConfirmPassword,
+    handleRegister,
+    clearMessages,
   };
 };

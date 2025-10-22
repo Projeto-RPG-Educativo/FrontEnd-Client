@@ -1,19 +1,19 @@
 import { useState, useCallback } from 'react';
-import { useAuth } from '../../../services/auth/useAuth';
+import { useAuth } from '../../../hooks/auth/useAuth';
 
 interface UseLoginReturn {
   // Estados do formulário
-  usuario: string;
-  senha: string;
-  erro: string | null;
-  carregando: boolean;
-  formularioValido: boolean;
+  username: string;
+  password: string;
+  error: string | null;
+  loading: boolean;
+  isFormValid: boolean;
   
   // Ações
-  setUsuario: (usuario: string) => void;
-  setSenha: (senha: string) => void;
-  fazerLogin: (onSuccess: (token: string, user: any) => void) => Promise<void>;
-  limparErro: () => void;
+  setUsername: (usuario: string) => void;
+  setPassword: (senha: string) => void;
+  handleLogin: (onSuccess: (token: string, user: any) => void) => Promise<void>;
+  clearError: () => void;
 }
 
 /**
@@ -25,19 +25,19 @@ interface UseLoginReturn {
  * ```tsx
  * const LoginScreen = () => {
  *   const {
- *     usuario,
- *     senha,
- *     erro,
- *     carregando,
- *     formularioValido,
- *     setUsuario,
- *     setSenha,
- *     fazerLogin,
- *   } = useLoginScreen();
+ *     username,
+ *     password,
+ *     error,
+ *     loading,
+ *     isFormValid,
+ *     setUsername,
+ *     setPassword,
+ *     handleLogin,
+ *   } = useLogin();
  * 
  *   const handleSubmit = async (e: React.FormEvent) => {
  *     e.preventDefault();
- *     await fazerLogin((token, user) => {
+ *     await handleLogin((token, user) => {
  *       // Redirecionar para o jogo
  *     });
  *   };
@@ -45,49 +45,49 @@ interface UseLoginReturn {
  * ```
  */
 export const useLogin = (): UseLoginReturn => {
-  const [usuario, setUsuarioState] = useState('');
-  const [senha, setSenhaState] = useState('');
-  const { fazerLogin: loginService, carregando, erro, limparErro } = useAuth();
+  const [username, setUsernameState] = useState('');
+  const [password, setPasswordState] = useState('');
+  const { handleLogin: loginService, loading, error, clearError } = useAuth();
 
   // Validação do formulário
-  const formularioValido = usuario.trim().length >= 3 && senha.length >= 6;
+  const isFormValid = username.trim().length >= 3 && password.length >= 6;
 
-  // Setter para usuario que limpa erro
-  const setUsuario = useCallback((novoUsuario: string) => {
-    setUsuarioState(novoUsuario);
-    limparErro();
-  }, [limparErro]);
+  // Setter para username que limpa erro
+  const setUsername = useCallback((novoUsuario: string) => {
+    setUsernameState(novoUsuario);
+    clearError();
+  }, [clearError]);
 
-  // Setter para senha que limpa erro
-  const setSenha = useCallback((novaSenha: string) => {
-    setSenhaState(novaSenha);
-    limparErro();
-  }, [limparErro]);
+  // Setter para password que limpa erro
+  const setPassword = useCallback((novaSenha: string) => {
+    setPasswordState(novaSenha);
+    clearError();
+  }, [clearError]);
 
   // Fazer login
-  const fazerLogin = useCallback(async (
+  const handleLogin = useCallback(async (
     onSuccess: (token: string, user: any) => void
   ) => {
-    if (!formularioValido) {
+    if (!isFormValid) {
       return;
     }
 
-    const resultado = await loginService(usuario.trim(), senha);
+    const resultado = await loginService(username.trim(), password);
     
     if (resultado) {
       onSuccess(resultado.token, resultado.user);
     }
-  }, [usuario, senha, formularioValido, loginService]);
+  }, [username, password, isFormValid, loginService]);
 
   return {
-    usuario,
-    senha,
-    erro: erro ? erro.message : null,
-    carregando,
-    formularioValido,
-    setUsuario,
-    setSenha,
-    fazerLogin,
-    limparErro,
+    username,
+    password,
+    error: error ? error.message : null,
+    loading,
+    isFormValid,
+    setUsername,
+    setPassword,
+    handleLogin,
+    clearError,
   };
 };
