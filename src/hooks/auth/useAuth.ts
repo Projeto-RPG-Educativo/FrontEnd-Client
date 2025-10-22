@@ -3,14 +3,14 @@ import { login, register, logout, isAuthenticated, getToken } from '../../servic
 import type { AuthResponse } from '../../types/User';
 
 interface UseAuthReturn {
-  carregando: boolean;
-  erro: Error | null;
-  autenticado: boolean;
+  loading: boolean;
+  error: Error | null;
+  authenticated: boolean;
   token: string | null;
-  fazerLogin: (usuario: string, senha: string) => Promise<AuthResponse | null>;
-  fazerRegistro: (nome: string, email: string, senha: string) => Promise<AuthResponse | null>;
-  fazerLogout: () => void;
-  limparErro: () => void;
+  handleLogin: (usuario: string, senha: string) => Promise<AuthResponse | null>;
+  handleRegister: (nome: string, email: string, senha: string) => Promise<AuthResponse | null>;
+  handleLogout: () => void;
+  clearError: () => void;
 }
 
 /**
@@ -18,10 +18,10 @@ interface UseAuthReturn {
  * 
  * @example
  * ```tsx
- * const { fazerLogin, carregando, erro, autenticado } = useAuth();
+ * const { handleLogin, loading, error, authenticated } = useAuth();
  * 
  * const handleLogin = async () => {
- *   const resultado = await fazerLogin('email@example.com', 'senha123');
+ *   const resultado = await handleLogin('email@example.com', 'senha123');
  *   if (resultado) {
  *     console.log('Login bem-sucedido!', resultado.user);
  *   }
@@ -29,60 +29,60 @@ interface UseAuthReturn {
  * ```
  */
 export const useAuth = (): UseAuthReturn => {
-  const [carregando, setCarregando] = useState(false);
-  const [erro, setErro] = useState<Error | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-  const fazerLogin = async (
+  const handleLogin = async (
     usuario: string,
     senha: string
   ): Promise<AuthResponse | null> => {
-    setCarregando(true);
-    setErro(null);
+    setLoading(true);
+    setError(null);
     try {
       const resultado = await login(usuario, senha);
       return resultado;
     } catch (error) {
-      setErro(error as Error);
+      setError(error as Error);
       return null;
     } finally {
-      setCarregando(false);
+      setLoading(false);
     }
   };
 
-  const fazerRegistro = async (
+  const handleRegister = async (
     nome: string,
     email: string,
     senha: string
   ): Promise<AuthResponse | null> => {
-    setCarregando(true);
-    setErro(null);
+    setLoading(true);
+    setError(null);
     try {
       const resultado = await register(nome, email, senha);
       return resultado;
     } catch (error) {
-      setErro(error as Error);
+      setError(error as Error);
       return null;
     } finally {
-      setCarregando(false);
+      setLoading(false);
     }
   };
 
-  const fazerLogout = () => {
+  const handleLogout = () => {
     logout();
   };
 
-  const limparErro = () => {
-    setErro(null);
+  const clearError = () => {
+    setError(null);
   };
 
   return {
-    carregando,
-    erro,
-    autenticado: isAuthenticated(),
+    loading,
+    error,
+    authenticated: isAuthenticated(),
     token: getToken(),
-    fazerLogin,
-    fazerRegistro,
-    fazerLogout,
-    limparErro,
+    handleLogin,
+    handleRegister,
+    handleLogout,
+    clearError,
   };
 };

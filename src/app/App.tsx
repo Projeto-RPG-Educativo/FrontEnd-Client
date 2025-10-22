@@ -1,28 +1,57 @@
 import React, { useContext } from 'react';
+
+// contexts
 import {
   AuthProvider, AuthContext,
-  FullscreenProvider
+  FullscreenProvider, GameProvider, useGame,
 } from '../contexts/index';
+
+// components
 import {
   Layout,
   ErrorBoundary,
 } from '../components/index';
-import { Auth } from '../screen/user/index';
 
+// screens
+import { Auth, MainMenu, } from '../screen/index';
+
+// hooks 
+import { MenuLogic, SaveLogic, } from '../hooks/index'
 
 const App: React.FC = () => {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, logout } = useContext(AuthContext);
+  const { gameState: gamestate, setGameState, setDifficulty } = useGame();
+  const { handleStartNewGame, toggleSettings } = MenuLogic({ setGameState, setDifficulty });
+  const { slots, isLoading, error, fetchSaves, handleLoadGame } = SaveLogic({ setPlayer: () => {}, setGameState });
 
   if (!isLoggedIn) {
     return <Auth />;
   }
 
-  return (
-    <div>
-      <h1>Bem-vindo! Você está logado.</h1>
-      <p>Aqui vai o conteúdo principal da aplicação.</p>
-    </div>
-  );
+  const renderGameContent = () => {
+    switch (gamestate) {
+      case 'MENU':
+        return <MainMenu
+          onStartNewGame={handleStartNewGame}
+          onGoToSettings={toggleSettings}
+          onLogout={logout} 
+          slots={slots} 
+          isLoadingSaves={isLoading} 
+          errorSaves={error} 
+          onFetchSaves={fetchSaves} 
+          onLoadGame={handleLoadGame}
+           />;
+
+      default:
+        return null;
+    }
+  };
+
+  return(
+    <>
+      {renderGameContent()}
+    </>
+  )
 };
 
 const AppWrapper: React.FC = () => {
@@ -30,9 +59,11 @@ const AppWrapper: React.FC = () => {
     <ErrorBoundary>
       <AuthProvider>
         <FullscreenProvider>
-          <Layout>
-            <App />
-          </Layout>
+          <GameProvider>
+            <Layout>
+              <App />
+            </Layout>
+          </GameProvider>
         </FullscreenProvider>
       </AuthProvider>
     </ErrorBoundary>

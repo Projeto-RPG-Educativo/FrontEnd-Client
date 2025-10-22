@@ -9,19 +9,19 @@ interface LoginScreenProps {
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, onGoToRegister }) => {
   const {
-    usuario,
-    senha,
-    erro,
-    carregando,
-    formularioValido,
-    setUsuario,
-    setSenha,
-    fazerLogin,
+    username,
+    password,
+    error,
+    loading,
+    isFormValid,
+    setUsername,
+    setPassword,
+    handleLogin,
   } = useLogin();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLoginForm = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fazerLogin(onLoginSuccess);
+    await handleLogin(onLoginSuccess);
   };
 
   return (
@@ -29,14 +29,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, onGoToRegiste
       <S.FormWrapper>
         <S.Title>LOGIN</S.Title>
 
-        <S.Form onSubmit={handleLogin}>
+        <S.Form onSubmit={handleLoginForm}>
           <S.InputGroup>
             <label htmlFor="string">Usuario</label>
             <S.Input
               id="string"
               type="text"
-              value={usuario}
-              onChange={(e) => setUsuario(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="Digite seu usuário"
               autoComplete="username"
               required
@@ -49,8 +49,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, onGoToRegiste
             <S.Input
               id="password"
               type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Digite sua senha"
               autoComplete="current-password"
               required
@@ -58,17 +58,17 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, onGoToRegiste
             />
           </S.InputGroup>
 
-          {erro && <S.ErrorMessage>{erro}</S.ErrorMessage>}
+          {error && <S.ErrorMessage>{error}</S.ErrorMessage>}
           
           <S.SubmitButton 
             type="submit" 
-            disabled={carregando || !formularioValido}
+            disabled={loading || !isFormValid}
           >
-            {carregando ? 'ENTRANDO...' : 'ENTRAR'}
+            {loading ? 'ENTRANDO...' : 'ENTRAR'}
           </S.SubmitButton>
         </S.Form>
 
-        <S.SecondaryButton onClick={onGoToRegister} disabled={carregando}>
+        <S.SecondaryButton onClick={onGoToRegister} disabled={loading}>
           Ainda não tem conta? Crie uma
         </S.SecondaryButton>
       </S.FormWrapper>

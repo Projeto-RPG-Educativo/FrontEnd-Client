@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../../../contexts/AuthContext';
 
-import {Login, Register} from '../index';
+import {Login, Register} from '../../index';
 
 /**
  * AuthScreen: Componente orquestrador das telas de autenticação.
