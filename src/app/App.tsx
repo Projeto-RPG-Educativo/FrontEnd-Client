@@ -13,17 +13,17 @@ import {
 } from '../components/index';
 
 // screens
-import { Auth, MainMenu, ClassSelection } from '../screen/index';
+import { Auth, MainMenu, ClassSelection, ZoneRouter } from '../screen/index';
 
 // hooks 
-import { MenuLogic, SaveLogic } from '../hooks/index'
+import { MenuLogic, SaveLogic, HubLogic, NavigationLogic } from '../hooks/index'
 
 const App: React.FC = () => {
   const { isLoggedIn, logout } = useContext(AuthContext);
-  const { gameState: gamestate, setGameState, setDifficulty } = useGame();
+  const { gameState: gamestate, setGameState, setDifficulty, hubState, setHubState, player } = useGame();
   const { handleStartNewGame, toggleSettings } = MenuLogic({ setGameState, setDifficulty });
   const { slots, isLoading, error, fetchSaves, handleLoadGame } = SaveLogic({ setPlayer: () => { }, setGameState });
-
+  const {  goToHubCentral, goToHubZone } = HubLogic();
   if (!isLoggedIn) {
     return <Auth />;
   }
@@ -44,6 +44,21 @@ const App: React.FC = () => {
 
       case 'CLASS_SELECTION':
         return <ClassSelection />;
+
+      case 'HUB':
+        return (
+        <ZoneRouter
+        hubState={hubState}
+        player={player}
+        onGoToCentral={goToHubCentral}
+        onGoToZone={goToHubZone}
+        onRest={() => {}}
+        onBuyItem={() => {}}
+        onStartQuizBattle={() => {}}
+        onBack={goToHubCentral}
+      />
+    );
+
 
       default:
         return null;
