@@ -1,11 +1,11 @@
 // Imports diretos
-import tankImage from '../assets/Images/characters/Tank.jpg';
-import mageImage from '../assets/Images/characters/Mage.jpg';
-import fighterImage from '../assets/Images/characters/Fighter.jpg';
-import rogueImage from '../assets/Images/characters/Rogue.jpg';
-import paladinImage from '../assets/Images/characters/Paladin.jpg';
-import bardImage from '../assets/Images/characters/Bard.jpg';
-import defaultImage from '../assets/Images/characters/Default.jpg';
+import tankImage from '../../assets/Images/characters/Tank.jpg';
+import mageImage from '../../assets/Images/characters/Mage.jpg';
+import fighterImage from '../../assets/Images/characters/Fighter.jpg';
+import rogueImage from '../../assets/Images/characters/Rogue.jpg';
+import paladinImage from '../../assets/Images/characters/Paladin.jpg';
+import bardImage from '../../assets/Images/characters/Bard.jpg';
+import defaultImage from '../../assets/Images/characters/Default.jpg';
 
 // Definir tipos para as imagens
 export type CharacterImage = 

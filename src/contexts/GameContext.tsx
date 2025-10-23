@@ -7,6 +7,15 @@ export type GameState =
   | 'HUB'
 ;
 
+export type HubState =
+  | 'CENTRAL'
+  | 'TOWER'
+  | 'ARENA'
+  | 'LIBRARY'
+  | 'SHOP'
+  | 'INN'
+;
+
 
 
 export type Difficulty = 'facil' | 'medio' | 'dificil';
@@ -21,6 +30,8 @@ interface GameContextType {
   setPlayer: (player: Player | null) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
+  hubState: HubState;
+  setHubState: (state: HubState) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -39,6 +50,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [difficulty, setDifficulty] = useState<Difficulty>('facil');
   const [player, setPlayer] = useState<Player | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [hubState, setHubState] = useState<HubState>('CENTRAL');
 
   const value: GameContextType = {
     gameState,
@@ -49,6 +61,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setPlayer,
     isLoading,
     setIsLoading,
+    hubState,
+    setHubState,
   };
     return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
 };
