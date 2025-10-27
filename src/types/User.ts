@@ -1,4 +1,4 @@
-export interface User {
+export interface User { 
   id: string;
   username: string;
   email: string;
@@ -7,13 +7,13 @@ export interface User {
 }
 
 export interface RegisterUserRequest {
-  username: string;
+  nomeUsuario: string;
   email: string;
-  password: string;
+  senha: string;
 }
 
 export interface LoginUserRequest {
-  email: string;
+  username: string;
   password: string;
 }
 

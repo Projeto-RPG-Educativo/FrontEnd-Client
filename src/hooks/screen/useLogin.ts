@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useAuth } from '../auth/useAuth';
+import { useAuth } from './useAuth';
 
 interface UseLoginReturn {
   // Estados do formulário

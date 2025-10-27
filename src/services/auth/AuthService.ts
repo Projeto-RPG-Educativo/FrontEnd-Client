@@ -1,5 +1,5 @@
-import api from '../api/api';
-import type { AuthResponse } from '../../types/User';
+import api from '../../services/api/api';
+import type { AuthResponse, LoginUserRequest, RegisterUserRequest } from '../../types/User';
 
 // ==================== LOGIN ====================
 /**
@@ -8,13 +8,13 @@ import type { AuthResponse } from '../../types/User';
  * @param senha Senha do usuário
  * @returns Token e dados do usuário
  */
-export const login = async (usuario: string, senha: string): Promise<AuthResponse> => {
+export const login = async (data: LoginUserRequest): Promise<AuthResponse> => {
   try {
     console.log('🔐 [AuthService] Fazendo login...');
     
-    const response = await api.post<AuthResponse>('/usuarios/login', {
-      nome_usuario: usuario,
-      senha: senha,
+    const response = await api.post<AuthResponse>('/auth/login', {
+      username: data.username,
+      password: data.password,
     });
     
     // Salvar token no localStorage
@@ -39,17 +39,15 @@ export const login = async (usuario: string, senha: string): Promise<AuthRespons
  * @returns Token e dados do usuário
  */
 export const register = async (
-  nome: string,
-  email: string,
-  senha: string
+  data: RegisterUserRequest
 ): Promise<AuthResponse> => {
   try {
     console.log('📝 [AuthService] Registrando novo usuário...');
-    
-    const response = await api.post<AuthResponse>('/usuarios/registrar', {
-      nome_usuario: nome,
-      email,
-      senha: senha,
+
+    const response = await api.post<AuthResponse>('/auth/register', {
+      nomeUsuario: data.username,
+      email: data.email,
+      senha: data.password,
     });
     
     // Salvar token no localStorage
