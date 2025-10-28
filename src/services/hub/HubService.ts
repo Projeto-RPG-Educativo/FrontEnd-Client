@@ -1,7 +1,6 @@
-import api from '../api/api';
+import api from '../../services/api/api';
 
 import type {
-  HubStats,
   SkillsResponse,
   PurchaseSkillRequest,
   PurchaseSkillResponse,
@@ -58,7 +57,7 @@ export const getRankingsFromHub = async (): Promise<Rankings> => {
 /**
  * Atualiza as estatísticas do jogador
  */
-export const updateHubStats = async (data: Partial<HubStats>): Promise<PlayerStats> => {
+export const updateHubStats = async (data: Partial<PlayerStats>): Promise<PlayerStats> => {
   const response = await api.put<PlayerStats>('/hub/stats', data);
   return response.data;
 };

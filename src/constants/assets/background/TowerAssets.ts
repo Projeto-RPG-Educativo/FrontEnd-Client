@@ -1,8 +1,8 @@
-import Reception from '../../assets/Images/background/hub/tower/ReceptionRoom.png';
-import training from '../../assets/Images/background/hub/tower/TrainingRoom.png';
-import ClassRoom from '../../assets/Images/background/hub/tower/StudyRoom.png';
-import Laboratory from '../../assets/Images/background/hub/tower/PotionRoom.png';
-import TowerMasterRoom from '../../assets/Images/background/hub/tower/GuildMasterRoom.png';
+import Reception from '../../../assets/Images/background/hub/tower/ReceptionRoom.png';
+import training from '../../../assets/Images/background/hub/tower/TrainingRoom.png';
+import ClassRoom from '../../../assets/Images/background/hub/tower/StudyRoom.png';
+import Laboratory from '../../../assets/Images/background/hub/tower/PotionRoom.png';
+import TowerMasterRoom from '../../../assets/Images/background/hub/tower/GuildMasterRoom.png';
 
 export type TowerImages = 
    | 'Reception'

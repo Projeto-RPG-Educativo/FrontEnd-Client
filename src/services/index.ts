@@ -1,17 +1,21 @@
 // ==================== API Core ====================
-export { default as api } from './api/api';
+export { default as api } from '../services/api/api';
 
 // ==================== Authentication ====================
-export * from './auth/AuthService';
+export * from '../services/auth/AuthService';
 
 // ==================== Save Management ====================
-export * from './menu/load/SaveService';
+export * from './menu/SaveService';
 
 // ==================== Character Management ====================
-export * from './character/CharacterService';
-
-// ==================== Player Management ====================
-export * from './player/PlayerService';
+export * from '../services/character/CharacterService';
 
 // ==================== Hub Management ====================
-export * from './hub/HubService';
+export * from '../services/hub/HubService';
+
+// ==================== Battle Management ====================
+export * from '../services/battle/BattleService';
+
+// ==================== Question Management ====================
+export * from '../services/question/QuestionService';
+

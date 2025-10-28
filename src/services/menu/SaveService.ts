@@ -1,26 +1,27 @@
-// src/shared/Services/save/SaveService.ts
-import api from '../../api/api';
-import type { 
-  SaveData, 
+import api from '../api/api';
+import type {
+  // DTOs da API
+  CreateSaveRequest,
+  GameSaveResponse,
   SaveDataFromBackend, 
+
+  // Modelos de Domínio (Front-end)
+  SaveData,
   SaveSlot,
-  SaveGameRequest,
-  SaveGameResponse, 
-} from '../../../types/Save';
-import { parseSaveData } from '../../../types/Save'; // jogar para um utils posteriormente
+} from '../../types';
+
+import  { parseSaveData } from '../../types/mapper/SaveMapper';
 
 // ==================== LISTAR SAVES ====================
 export const listSaves = async (): Promise<SaveSlot[]> => {
   try {
     console.log('📂 [SaveService] Listando saves...');
-    
     // Fazer request
     const response = await api.get<SaveDataFromBackend[]>('/saves/');
-    
     console.log('📦 [SaveService] Dados brutos recebidos:', response.data.length, 'saves');
-    
+
     // Converter para formato SaveSlot
-    const saveSlots: SaveSlot[] = response.data.map((rawSave) => ({
+   const saveSlots: SaveSlot[] = response.data.map((rawSave) => ({
       id: rawSave.id,
       userId: rawSave.userId,
       characterId: rawSave.characterId,
@@ -47,19 +48,18 @@ export const listSaves = async (): Promise<SaveSlot[]> => {
 };
 
 // ==================== SALVAR JOGO ====================
-export const saveGame = async (data: SaveGameRequest): Promise<SaveGameResponse> => {
+export const saveGame = async (data: CreateSaveRequest): Promise<GameSaveResponse> => {
   try {
     console.log('💾 [SaveService] Salvando jogo...', {
       characterId: data.characterId,
-      slotNumber: data.slotNumber,
+      slotNumber: data.slotName,
     });
     
     // Fazer request
-    const response = await api.post<SaveGameResponse>('/saves/', {
+    const response = await api.post<GameSaveResponse>('/saves/', {
       characterId: data.characterId,
-      saveData: data.saveData,
-      slotName: data.slotName || `Slot ${data.slotNumber || 1}`,
-      characterState: data.saveData.character,
+      slotName: data.slotName || `Slot ${data.slotName || 1}`,
+      characterState: data.currentState,
     });
     
     console.log('✅ [SaveService] Jogo salvo com sucesso!');
@@ -75,12 +75,14 @@ export const saveGame = async (data: SaveGameRequest): Promise<SaveGameResponse>
 };
 
 // ==================== DELETAR SAVE ====================
-export const deleteSave = async (saveId: number | string): Promise<{ message: string }> => {
+export const deleteSave = async (
+  saveId: number | string
+): Promise<{ message: string }> => {
   try {
     console.log(`🗑️ [SaveService] Deletando save ID ${saveId}...`);
-    
+
     await api.delete(`/saves/${saveId}`);
-    
+
     console.log('✅ [SaveService] Save deletado.');
     return { message: 'Save deletado com sucesso' };
   } catch (error: any) {
@@ -96,10 +98,12 @@ export const loadGame = async (saveId: number | string): Promise<SaveData> => {
   try {
     console.log(`📂 [SaveService] Carregando save ID ${saveId}...`);
 
+    // ATENÇÃO: Verifique esta rota. A API_ROTAS.md não tem /saves/{id}
     const response = await api.get<SaveDataFromBackend>(`/saves/${saveId}`);
 
     console.log('📦 [SaveService] Dados brutos carregados:', response.data);
 
+    // Usando o Mapper importado! Perfeito.
     const parsed = parseSaveData(response.data);
 
     if (!parsed) {
@@ -108,7 +112,6 @@ export const loadGame = async (saveId: number | string): Promise<SaveData> => {
 
     console.log('✅ [SaveService] Jogo carregado com sucesso:', parsed.slotName);
     return parsed;
-
   } catch (error: any) {
     console.error('❌ [SaveService] Erro ao carregar jogo:', {
       status: error.response?.status,

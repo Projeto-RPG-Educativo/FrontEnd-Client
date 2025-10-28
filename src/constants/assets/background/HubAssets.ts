@@ -1,4 +1,4 @@
-import Central from  '../../assets/Images/background/hub/central/CentralHub.png'
+import Central from  '../../../assets/Images/background/hub/central/CentralHub.png'
 
 export type HubImage = 'central';
 

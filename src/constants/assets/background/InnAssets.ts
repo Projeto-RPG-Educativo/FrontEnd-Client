@@ -1,4 +1,4 @@
-import InnRoom from '../../assets/Images/background/hub/inn/Myroom.png';
+import InnRoom from '../../../assets/Images/background/hub/inn/Myroom.png';
 
 export type InnImages = 
    | 'Room';

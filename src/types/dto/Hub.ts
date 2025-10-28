@@ -1,17 +1,16 @@
-// Hub Stats (mesmas que PlayerStats, mas focadas no Hub)
-export interface HubStats {
-  userId: string;
-  characterId: string;
-  stats: {
-    totalBattles: number;
-    victories: number;
-    defeats: number;
-    questionsAnswered: number;
-    correctAnswers: number;
-  };
-}
+import type { CharacterListResponse } from '../';
+import type { UserStatsResponse } from './User';
 
-// Skills (Torre do Conhecimento)
+/**
+ * Modelo de dados para a tela principal (Hub) do jogador.
+ * Combina estatísticas e a lista de personagens.
+ */
+export interface HubModel {
+  stats: UserStatsResponse;
+  characters: CharacterListResponse[];
+}
+// TOWER
+
 export interface Skill {
   id: string;
   name: string;
@@ -33,14 +32,16 @@ export interface Skill {
   }[];
 }
 
+
 export interface SkillsResponse {
   skills: Skill[];
   availablePoints: number;
   totalSpent: number;
 }
 
+
 export interface PurchaseSkillRequest {
-  skillId: string;
+  skillId: number;
 }
 
 export interface PurchaseSkillResponse {
@@ -50,7 +51,82 @@ export interface PurchaseSkillResponse {
   remainingPoints: number;
 }
 
-// Books (Biblioteca Silenciosa)
+// CENTRAL
+
+export interface PlayerStats {
+  id: string;
+  userId: string;
+  totalBattles: number;
+  victories: number;
+  defeats: number;
+  questionsAnswered: number;
+  correctAnswers: number;
+  totalDamageDealt: number;
+  totalDamageTaken: number;
+  goldEarned: number;
+  expEarned: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  requirement: string;
+  unlocked: boolean;
+  unlockedAt?: string;
+}
+
+export interface PlayerAchievements {
+  userId: string;
+  achievements: Achievement[];
+  totalUnlocked: number;
+  totalAvailable: number;
+}
+
+export interface BattleRecord {
+  id: string;
+  characterId: string;
+  characterName: string;
+  enemyName: string;
+  enemyType: 'minion' | 'boss';
+  result: 'victory' | 'defeat';
+  turnCount: number;
+  expGained: number;
+  goldGained: number;
+  questionsAnswered: number;
+  correctAnswers: number;
+  battleDate: string;
+}
+
+export interface BattleHistory {
+  userId: string;
+  battles: BattleRecord[];
+  totalBattles: number;
+}
+
+export interface RankingEntry {
+  rank: number;
+  userId: string;
+  username: string;
+  characterName: string;
+  characterClass: string;
+  level: number;
+  totalVictories: number;
+  winRate: number;
+  score: number;
+}
+
+export interface Rankings {
+  rankings: RankingEntry[];
+  userRank?: RankingEntry;
+  totalPlayers: number;
+}
+
+// LIBRARY
+
 export interface Book {
   id: string;
   title: string;
@@ -85,7 +161,8 @@ export interface BooksResponse {
   totalAvailable: number;
 }
 
-// Professors (Palco da Retórica)
+// SCHOOL
+
 export interface Professor {
   id: string;
   name: string;
@@ -121,7 +198,8 @@ export interface ProfessorDialoguesResponse {
   currentDialogue: ProfessorDialogue;
 }
 
-// Store (Sebo da Linguística)
+// STORE
+
 export interface StoreItem {
   id: string;
   name: string;
@@ -136,14 +214,16 @@ export interface StoreItem {
   }[];
 }
 
+
 export interface StoresResponse {
   items: StoreItem[];
   playerGold: number;
 }
 
 export interface PurchaseItemRequest {
-  itemId: string;
+  itemId: number; 
   quantity: number;
+  lojaId?: number; 
 }
 
 export interface PurchaseItemResponse {
