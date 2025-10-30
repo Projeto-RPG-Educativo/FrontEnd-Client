@@ -77,3 +77,7 @@ export interface FullClassData {
   strength: number;
   intelligence: number;
 }
+
+export interface CharacterImages {
+      [key: string]: string;
+}
