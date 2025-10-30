@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useAuth } from '../auth/useAuth';
+import { useAuth } from './useAuth';
 
 interface UseLoginReturn {
   // Estados do formulário
@@ -73,8 +73,11 @@ export const useLogin = (): UseLoginReturn => {
     }
 
     const result = await loginService(username.trim(), password);
-    
-    if (result) {
+
+    if (result && result.token) {
+      // Salva usuário e token apenas se o token existir
+      localStorage.setItem('user', JSON.stringify(result.user));
+      localStorage.setItem('token', result.token);
       onSuccess(result.token, result.user);
     }
   }, [username, password, isFormValid, loginService]);

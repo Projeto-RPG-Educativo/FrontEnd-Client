@@ -1,9 +1,9 @@
 // --- REQUESTS ---
 
 export interface RegisterUserRequest {
-  nomeUsuario: string;
+  username: string;
   email: string;
-  senha: string;
+  password: string;
 }
 
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLogin } from './useLogin';
+import { useLogin } from '../../../hooks/screen/auth/useLogin';
 import * as S from '../User.styles'
 
 interface LoginScreenProps {

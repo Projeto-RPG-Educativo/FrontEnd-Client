@@ -12,10 +12,8 @@ export const login = async (data: LoginUserRequest): Promise<LoginResponse> => {
   try {
     console.log('🔐 [AuthService] Fazendo login...');
 
-    // ATUALIZADO: Usando o DTO 'LoginResponse' e passando 'data' diretamente
     const response = await api.post<LoginResponse>('/auth/login', data);
 
-    // Salvar token no localStorage
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       console.log('✅ [AuthService] Login bem-sucedido. Token salvo.');
@@ -35,11 +33,7 @@ export const register = async (
 ): Promise<LoginResponse> => {
   try {
     console.log('📝 [AuthService] Registrando novo usuário...');
-
-    // ATUALIZADO: Usando 'LoginResponse' e 'data'
     const response = await api.post<LoginResponse>('/auth/register', data);
-
-    // Salvar token no localStorage
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       console.log('✅ [AuthService] Registro bem-sucedido. Token salvo.');

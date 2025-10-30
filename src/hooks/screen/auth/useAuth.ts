@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { login, register, logout, isAuthenticated, getToken } from '../../../services/auth/AuthService';
-import type { AuthResponse, LoginUserRequest,RegisterUserRequest } from '../../../types/User';
+import type { LoginResponse, LoginUserRequest,RegisterUserRequest } from '../../../types';
 
 interface UseAuthReturn {
   loading: boolean;
   error: Error | null;
   authenticated: boolean;
   token: string | null;
-  handleLogin: (usuario: string, senha: string) => Promise<AuthResponse | null>;
-  handleRegister: (nome: string, email: string, senha: string) => Promise<AuthResponse | null>;
+  handleLogin: (usuario: string, senha: string) => Promise<LoginResponse | null>;
+  handleRegister: (nome: string, email: string, senha: string) => Promise<LoginResponse | null>;
   handleLogout: () => void;
   clearError: () => void;
 }
@@ -35,7 +35,7 @@ export const useAuth = (): UseAuthReturn => {
   const handleLogin = async (
     username: string,
     password: string
-  ): Promise<AuthResponse | null> => {
+  ): Promise<LoginResponse | null> => {
     setLoading(true);
     setError(null);
     try {
@@ -51,15 +51,15 @@ export const useAuth = (): UseAuthReturn => {
   };
 
   const handleRegister = async (
-    nome: string,
-    email: string,
-    senha: string
-  ): Promise<AuthResponse | null> => {
+  username: string,
+  email: string,
+  password: string
+  ): Promise<LoginResponse | null> => {
     setLoading(true);
     setError(null);
     try {
-      const data: RegisterUserRequest = { nomeUsuario: nome, email, senha };
-      const result = await register(data);
+  const data: RegisterUserRequest = { username, email, password };
+  const result = await register(data);
       return result;
     } catch (error) {
       setError(error as Error);
