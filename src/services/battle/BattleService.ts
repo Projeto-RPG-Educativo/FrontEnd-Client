@@ -17,7 +17,6 @@ export const startBattle = async (
   console.log('🎮 [BattleService] Iniciando batalha com dados:', data);
 
   try {
-    // ATUALIZADO: Tipo de retorno agora é BattleStateResponse
     const response = await api.post<BattleStateResponse>('/battle/start', data);
     console.log('✅ [BattleService] Resposta da API:', response.data);
     return response.data;

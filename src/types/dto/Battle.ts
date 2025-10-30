@@ -8,7 +8,7 @@ export interface StartBattleRequest {
 }
 
 export interface BattleActionRequest {
-  action: "attack" | "defend" | "useSkill";
+  action: "attack" | "defend" | "skill";
 }
 
 export interface SubmitAnswerRequest {
@@ -66,9 +66,8 @@ export interface BattleSaveProgressResponseLegado {
   message: string;
 }
 
-// extra da uma verificada melhor na logica
+// Validação posterior necessaria
 
-// (Primeiro, defina os sub-modelos)
 export interface Effect {
   name: string;
   turns: number;
