@@ -5,6 +5,7 @@ import type { QuestionInfo } from './Question';
 export interface StartBattleRequest {
   monsterId: number;
   difficulty: "facil" | "medio" | "dificil";
+  characterId: number;
 }
 
 export interface BattleActionRequest {

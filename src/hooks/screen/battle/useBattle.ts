@@ -23,7 +23,8 @@ interface UseBattleReturn {
   // Ações de batalha
   startBattle: (
     monsterId: number,
-    difficulty: 'facil' | 'medio' | 'dificil'
+    difficulty: 'facil' | 'medio' | 'dificil',
+    characterId: number
   ) => Promise<void>;
   executeBattleAction: (action: BattleActionRequest) => Promise<void>;
   answerQuestion: (answer: string) => Promise<void>;
@@ -132,6 +133,7 @@ export const useBattleScreen = (): UseBattleReturn => {
         const result = await startBattleService({
           monsterId: Number(monsterId),
           difficulty,
+          characterId: player?.id || 0,
         });
         if (result) {
           console.log('✅ [useBattleScreen] Batalha iniciada com sucesso:', result);
