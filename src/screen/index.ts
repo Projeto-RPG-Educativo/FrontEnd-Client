@@ -11,6 +11,8 @@ export { default as ClassSelection } from './classSelection/ClassSelection';
 export { default as BattleScreen } from './battle/BattleScreen';
 export { default as QuizScreen } from './quiz/QuizScreen';
 
+export { default as TutorialOverlay } from './tutorial/TutorialOverlay';
+
 export { default as ZoneRouter } from './hub/router/ZoneRouter';
 export { default as Central } from './hub/central/Central';
 export { default as Inn } from './hub/inn/Inn';

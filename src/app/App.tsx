@@ -13,31 +13,39 @@ import {
 } from '../components/index';
 
 // screens
-import { Auth, MainMenu, ClassSelection, ZoneRouter, BattleScreen, QuizScreen } from '../screen/index';
+import { Auth, MainMenu, ClassSelection, ZoneRouter, BattleScreen, QuizScreen, TutorialOverlay } from '../screen/index';
+
 // hooks 
-import { SaveLogic, HubLogic, useBattleScreen } from '../hooks/index'
+import { SaveLogic, HubLogic, useBattleScreen, TutorialLogic } from '../hooks/index'
 
 const App: React.FC = () => {
   const { isLoggedIn, logout } = useContext(AuthContext);
 
   const { gameState: gamestate, setGameState,
-     hubState, player, enemy, 
-     currentQuestion, 
-     gameMessage, 
-    } = useGame();
+    hubState, player, enemy,
+    currentQuestion,
+    gameMessage,
+  } = useGame();
 
-  const { 
-    slots, isLoading, error, 
-    fetchSaves, handleLoadGame } = SaveLogic({ setPlayer: () => {}, setGameState });
+  const {
+    slots, isLoading, error,
+    fetchSaves, handleLoadGame } = SaveLogic({ setPlayer: () => { }, setGameState });
 
   const { goToHubCentral, goToHubZone } = HubLogic();
   const { executeBattleAction, openQuiz, closeQuiz, answerQuestion, startBattle } = useBattleScreen();
+  const {
+    dialogueData,
+    currentDialogueIndex,
+    characterImages,
+    advanceDialogue,
+    isTutorialLoading
+  } = TutorialLogic({ gamestate, setGameState });
 
   useEffect(() => {
     console.log('%c O ESTADO DO JOGO MUDOU PARA:', 'color: lightblue; font-size: 10px;', gamestate);
   }, [gamestate]);
 
-  
+
   if (!isLoggedIn) {
     return <Auth />;
   }
@@ -51,39 +59,43 @@ const App: React.FC = () => {
           isLoadingSaves={isLoading}
           errorSaves={error}
           onFetchSaves={fetchSaves}
-          onLoadGame={handleLoadGame} 
-          />;
+          onLoadGame={handleLoadGame}
+        />;
 
       case 'CLASS_SELECTION':
         return <ClassSelection />;
 
       case 'HUB':
         return (
-        <ZoneRouter
-        hubState={hubState}
-        player={player}
-        onGoToCentral={goToHubCentral}
-        onGoToZone={goToHubZone}
-        onRest={() => {}}
-        onBuyItem={() => {}}
-        onStartQuizBattle={() => {}}
-        onBack={goToHubCentral}
-        setGameState={setGameState}
-        startBattle={startBattle}
-      />
-    );
-    case 'BATTLE':
-      if (!player || !enemy) return null;
-      return ( <BattleScreen 
-        player={player} 
-        monster={enemy} 
-        gameMessage={null} 
-        onGoToMenu={() =>  setGameState('MENU')}
-        onPauseGame={() => setGameState('MENU')}
-        onOpenQuiz={openQuiz}
-        onCombatAction={(actionName) => executeBattleAction({ action: actionName })}
-      />);
-      
+          <ZoneRouter
+            hubState={hubState}
+            player={player}
+            onGoToCentral={goToHubCentral}
+            onGoToZone={goToHubZone}
+            onRest={() => { }}
+            onBuyItem={() => { }}
+            onStartQuizBattle={() => { }}
+            onBack={goToHubCentral}
+            setGameState={setGameState}
+            startBattle={(monsterId, player, difficulty) => {
+              if (!player) return Promise.resolve();
+              return startBattle(monsterId, difficulty, player.id);  // arrumar depois essa presepada aqui hehe
+            }}
+          />
+        );
+      case 'BATTLE':
+        if (!player || !enemy) return null;
+        return (<BattleScreen
+          player={player}
+          monster={enemy}
+          gameMessage={null}
+          onGoToMenu={() => setGameState('MENU')}
+          onPauseGame={() => setGameState('MENU')}
+          onOpenQuiz={openQuiz}
+          onCombatAction={(actionName) => executeBattleAction({ action: actionName })}
+        />);
+
+
       case 'QUIZ':
         if (!currentQuestion) {
           console.warn('⚠️ Estado QUIZ sem pergunta disponível');
@@ -96,7 +108,7 @@ const App: React.FC = () => {
             onCloseQuiz={closeQuiz}
           />
         );
-
+        
       default:
         return null;
     }
@@ -105,6 +117,15 @@ const App: React.FC = () => {
   return (
     <>
       {renderGameContent()}
+
+      {dialogueData && (
+        <TutorialOverlay
+          dialogueData={dialogueData}
+          currentDialogueIndex={currentDialogueIndex}
+          onAdvanceDialogue={advanceDialogue}
+          characterImages={characterImages}
+        />
+      )}
     </>
   )
 };

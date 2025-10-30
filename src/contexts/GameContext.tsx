@@ -9,6 +9,8 @@ export type GameState =
   | 'HUB'
   | 'BATTLE'
   | 'QUIZ'
+  | 'TUTORIAL'
+  | 'DIALOGUE'
 ;
 
 export type HubState =
@@ -57,6 +59,7 @@ interface GameContextType {
   goToClassSelection: () => void;
   goToQuiz: () => void;
   goToHubZone: (zone: HubState) => void;
+  goToTutorial: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -91,7 +94,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const goToBattle = () => setGameState('BATTLE');
   const goToClassSelection = () => setGameState('CLASS_SELECTION');
   const goToQuiz = () => setGameState('QUIZ');
-
+  const goToTutorial = () => setGameState('TUTORIAL');
   const goToHubZone = (zone: HubState) => setHubState(zone);
 
   const resetGameConfig = () => {
@@ -135,7 +138,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     goToClassSelection,
     goToHubZone,
     goToQuiz,
+    goToTutorial,
     resetGameConfig,
+
   };
     return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
 };
