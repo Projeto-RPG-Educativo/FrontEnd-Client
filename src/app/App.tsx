@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 // contexts
 import {
@@ -13,17 +13,31 @@ import {
 } from '../components/index';
 
 // screens
-import { Auth, MainMenu, ClassSelection, ZoneRouter } from '../screen/index';
-
+import { Auth, MainMenu, ClassSelection, ZoneRouter, BattleScreen, QuizScreen } from '../screen/index';
 // hooks 
-import { MenuLogic, SaveLogic, HubLogic, NavigationLogic } from '../hooks/index'
+import { SaveLogic, HubLogic, useBattleScreen } from '../hooks/index'
 
 const App: React.FC = () => {
   const { isLoggedIn, logout } = useContext(AuthContext);
-  const { gameState: gamestate, setGameState, setDifficulty, hubState, setHubState, player } = useGame();
-  const { handleStartNewGame, toggleSettings } = MenuLogic({ setGameState, setDifficulty });
-  const { slots, isLoading, error, fetchSaves, handleLoadGame } = SaveLogic({ setPlayer: () => { }, setGameState });
-  const {  goToHubCentral, goToHubZone } = HubLogic();
+
+  const { gameState: gamestate, setGameState,
+     hubState, player, enemy, 
+     currentQuestion, 
+     gameMessage, 
+    } = useGame();
+
+  const { 
+    slots, isLoading, error, 
+    fetchSaves, handleLoadGame } = SaveLogic({ setPlayer: () => {}, setGameState });
+
+  const { goToHubCentral, goToHubZone } = HubLogic();
+  const { executeBattleAction, openQuiz, closeQuiz, answerQuestion, startBattle } = useBattleScreen();
+
+  useEffect(() => {
+    console.log('%c O ESTADO DO JOGO MUDOU PARA:', 'color: lightblue; font-size: 10px;', gamestate);
+  }, [gamestate]);
+
+  
   if (!isLoggedIn) {
     return <Auth />;
   }
@@ -32,15 +46,13 @@ const App: React.FC = () => {
     switch (gamestate) {
       case 'MENU':
         return <MainMenu
-          onStartNewGame={handleStartNewGame}
-          onGoToSettings={toggleSettings}
           onLogout={logout}
           slots={slots}
           isLoadingSaves={isLoading}
           errorSaves={error}
           onFetchSaves={fetchSaves}
-          onLoadGame={handleLoadGame}
-        />;
+          onLoadGame={handleLoadGame} 
+          />;
 
       case 'CLASS_SELECTION':
         return <ClassSelection />;
@@ -56,9 +68,34 @@ const App: React.FC = () => {
         onBuyItem={() => {}}
         onStartQuizBattle={() => {}}
         onBack={goToHubCentral}
+        setGameState={setGameState}
+        startBattle={startBattle}
       />
     );
-
+    case 'BATTLE':
+      if (!player || !enemy) return null;
+      return ( <BattleScreen 
+        player={player} 
+        monster={enemy} 
+        gameMessage={null} 
+        onGoToMenu={() =>  setGameState('MENU')}
+        onPauseGame={() => setGameState('MENU')}
+        onOpenQuiz={openQuiz}
+        onCombatAction={(actionName) => executeBattleAction({ action: actionName })}
+      />);
+      
+      case 'QUIZ':
+        if (!currentQuestion) {
+          console.warn('⚠️ Estado QUIZ sem pergunta disponível');
+        }
+        return (
+          <QuizScreen
+            currentQuestion={currentQuestion}
+            gameMessage={gameMessage}
+            onAnswer={answerQuestion}
+            onCloseQuiz={closeQuiz}
+          />
+        );
 
       default:
         return null;
@@ -71,6 +108,8 @@ const App: React.FC = () => {
     </>
   )
 };
+
+
 
 const AppWrapper: React.FC = () => {
   return (

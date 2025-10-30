@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useState, type ReactNode } from 'react';
-import type { Player, Monster, ClassName, BattleStateResponse } from '../types';
+import type { Player, Monster, ClassName, BattleStateResponse, Question, QuestionDifficulty } from '../types';
+
+export type Difficulty = QuestionDifficulty;
 
 export type GameState = 
   | 'MENU'
   | 'CLASS_SELECTION'
   | 'HUB'
   | 'BATTLE'
+  | 'QUIZ'
 ;
 
 export type HubState =
@@ -17,15 +20,12 @@ export type HubState =
   | 'INN'
   | 'EXIT'
 ;
-
-export type Difficulty = 'facil' | 'medio' | 'dificil';
-
 interface GameContextType {
   // === ESTADOS PRINCIPAIS ===
   gameState: GameState;
   setGameState: (state: GameState) => void;
-  difficulty: Difficulty | null;
-  setDifficulty: (difficulty: Difficulty | null) => void;
+  difficulty: QuestionDifficulty | null;
+  setDifficulty: (difficulty: QuestionDifficulty | null) => void;
   tutorial: boolean | null;
   setTutorial: (tutorial: boolean | null) => void;
   player: Player | null;
@@ -40,7 +40,14 @@ interface GameContextType {
   setHubState: (state: HubState) => void;
   battleState: BattleStateResponse | null;
   setBattleState: (state: BattleStateResponse | null) => void;
-
+  battleId: Number | null;
+  setBattleId: (id: Number | null) => void;
+  showQuiz: boolean;
+  setShowQuiz: (show: boolean) => void;
+  currentQuestion: Question | null;
+  setCurrentQuestion: (question: Question | null) => void;
+  gameMessage: string | null;
+  setGameMessage: (message: string | null) => void;
   resetGameConfig: () => void;
 
   // === FUNÇÕES DE NAVEGAÇÃO ===
@@ -48,6 +55,7 @@ interface GameContextType {
   goToHub: () => void;
   goToBattle: () => void;
   goToClassSelection: () => void;
+  goToQuiz: () => void;
   goToHubZone: (zone: HubState) => void;
 }
 
@@ -64,7 +72,7 @@ export const useGame = () => {
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Estados principais
   const [gameState, setGameState] = useState<GameState>('MENU');
-  const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
+  const [difficulty, setDifficulty] = useState<QuestionDifficulty | null>(null);
   const [player, setPlayer] = useState<Player | null>(null);
   const [className, setClassName] = useState<ClassName | null>(null);
   const [enemy, setEnemy] = useState<Monster | null >(null);
@@ -72,12 +80,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [hubState, setHubState] = useState<HubState>('CENTRAL');
   const [tutorial, setTutorial] = useState<boolean | null>(null);
   const [battleState, setBattleState] = useState<BattleStateResponse | null>(null);
+  const [battleId, setBattleId] = useState<Number | null>(null);
+  const [showQuiz, setShowQuiz] = useState<boolean>(false);
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+  const [gameMessage, setGameMessage] = useState<string | null>(null);
 
   // Funções de navegação
   const goToMenu = () => setGameState('MENU');
   const goToHub = () => setGameState('HUB');
   const goToBattle = () => setGameState('BATTLE');
   const goToClassSelection = () => setGameState('CLASS_SELECTION');
+  const goToQuiz = () => setGameState('QUIZ');
+
   const goToHubZone = (zone: HubState) => setHubState(zone);
 
   const resetGameConfig = () => {
@@ -105,6 +119,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setHubState,
     battleState,
     setBattleState,
+    battleId,
+    setBattleId,
+    showQuiz,
+    setShowQuiz,
+    currentQuestion,
+    setCurrentQuestion,
+    gameMessage,
+    setGameMessage,
 
     // Funções
     goToMenu,
@@ -112,6 +134,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     goToBattle,
     goToClassSelection,
     goToHubZone,
+    goToQuiz,
     resetGameConfig,
   };
     return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
