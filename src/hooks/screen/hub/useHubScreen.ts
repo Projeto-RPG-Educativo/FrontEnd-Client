@@ -1,17 +1,14 @@
 import { useCallback } from 'react';
-import { useGame } from '../../contexts';
-import { useHub } from './useHub';
-import { usePlayer } from '../player/usePlayer';
+import { useGame } from '../../../contexts';
+import { useBattleScreen } from '../battle/useBattle';
 
 /**
  * Hook para gerenciar navegação no Hub
  */
 export const HubLogic = () => {
-  const { hubState, setHubState, } = useGame();
-  
-  // Hooks de serviços (caso precise usar funções de API no futuro)
-    const hub = useHub();
-    const player = usePlayer();
+  const { hubState, setHubState, setGameState, player } = useGame();
+  const { startBattle } = useBattleScreen();
+
 
   const goToHubCentral = useCallback(() => {
     console.log('🏛️ Indo para hub central');
@@ -39,10 +36,26 @@ export const HubLogic = () => {
     }
   }, [setHubState, goToHubCentral]);
 
+  const goToExit = useCallback(() => {
+    console.log('🚪 Saindo do hub e indo para batalha');
+    
+    if (!player?.id) {
+      console.error('❌ Player não encontrado. Não é possível iniciar batalha.');
+      return;
+    }
+    // monsterId padrão = 1 (pode ser alterado depois)
+    const defaultMonsterId = 3;
+    const defaultDifficulty = 'facil';
+    
+    console.log('⚔️ Iniciando batalha - Player:', player.id, 'Monster:', defaultMonsterId, 'Difficulty:', defaultDifficulty);
+    startBattle(defaultMonsterId, defaultDifficulty);
+    setGameState('BATTLE');
+  }, [setGameState, startBattle, player]);
+
   return {
     hubState,
     goToHubCentral,
     goToHubZone,
+    goToExit,
   };
 };
-

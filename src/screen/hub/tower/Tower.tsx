@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { type Player } from '../../..//types';
 import { FloorContainer, NavArrow, BackButton } from './Tower.styles';
-import { TOWER_IMAGES, type TowerImages} from '../../../constants/assets/TowerAssets'; // ✅ Usar sistema de assets
+import { TOWER_IMAGES, type TowerImages} from '../../../constants/assets/background/TowerAssets'; // ✅ Usar sistema de assets
 
 // --- Importa os Componentes de Andar ---
 import Reception from './floors/F1/Reception'; 
