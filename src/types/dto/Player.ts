@@ -11,7 +11,6 @@ export interface PlayerModel {
   profile: UserProfileResponse;
   stats: UserStatsResponse;
   activeCharacter: CharacterResponse;
-  // Exemplo de campo extra do front-end:
   avatarUrl: string;
 }
 
@@ -24,7 +23,7 @@ export interface Player {
   xp: number;
   gold: number;
   lastSavedAt: string;
-  maxHp?: number;
+  maxHp: number;
   image?: string;
   damage?: number;
   className?: ClassName;

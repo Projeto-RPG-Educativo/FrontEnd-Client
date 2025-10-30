@@ -14,7 +14,7 @@ export type Monster = {
   damage: number;
   type?: string;
   isBoss?: boolean;
-  maxHp?: number ;
+  maxHp: number;
   image?: string;
 };
 
@@ -43,6 +43,7 @@ export interface CharacterResponse {
   xp: number;
   gold: number;
   hp: number;
+  maxHp: number;
   energy: number;
   maxEnergy: number;
   lastSavedAt: string;
