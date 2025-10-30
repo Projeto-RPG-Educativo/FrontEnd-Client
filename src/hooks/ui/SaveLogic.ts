@@ -1,14 +1,16 @@
 import { useState, useCallback } from 'react';
 import api from '../../services/api/api'; 
 import type { GameState } from '../../contexts/GameContext';
-import type { SaveData, DisplaySlot } from '../../types/Save';  
-import type { Player, ClassName } from '../../types/Character';  
+import type { SaveData, SaveSlot} from '../../types';  
+import type { Player, ClassName } from '../../types';  
 
-const BASE_SLOTS: DisplaySlot[] = Array.from({ length: 5 }, (_, index) => ({
+const BASE_SLOTS: SaveSlot[] = Array.from({ length: 5 }, (_, index) => ({
   id: index + 1,
   name: `Slot ${index + 1}`,
   progress: 'Não há dados',
   saveData: null,
+  characterId: ' ', 
+  lastSavedAt: ' ',
 }));
 
 interface SaveGameLogicProps {
@@ -17,7 +19,7 @@ interface SaveGameLogicProps {
 }
 
 export const SaveLogic = ({ setGameState, setPlayer }: SaveGameLogicProps) => {
-  const [slots, setSlots] = useState<DisplaySlot[]>(BASE_SLOTS);
+  const [slots, setSlots] = useState<SaveSlot[]>(BASE_SLOTS);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +31,7 @@ export const SaveLogic = ({ setGameState, setPlayer }: SaveGameLogicProps) => {
       const apiSaves: SaveData[] = response.data;
 
       const updatedSlots = BASE_SLOTS.map((baseSlot) => {
-        const save = apiSaves.find(s => s.slotName === baseSlot.name);
+        const save = apiSaves.find(s => s.slotName === baseSlot.slotName);
         if (save) {
           const date = new Date(save.savedAt).toLocaleString();
           const charName = save.character.nome;
@@ -70,7 +72,7 @@ export const SaveLogic = ({ setGameState, setPlayer }: SaveGameLogicProps) => {
       const loadedPlayer: Player = {
         // IDs e identificação
         id: saveData.character.id || 0,  // ✅ ADICIONAR com fallback
-        name: saveData.character.nome || 'Desconhecido',  // ✅ ADICIONAR com fallback
+        nome: saveData.character.nome || 'Desconhecido',  // ✅ ADICIONAR com fallback
         className: className || 'Guerreiro',  // ✅ ADICIONAR com fallback
         
         // Stats de combate
@@ -86,7 +88,9 @@ export const SaveLogic = ({ setGameState, setPlayer }: SaveGameLogicProps) => {
         
         // Estado de habilidade
         abilityUsed: false,  // ✅ ADICIONAR
-        
+        xp: saveData.characterState.xp || 0,  // ✅ Corrigido: pegar xp do characterState
+        gold: saveData.characterState.gold || 0,  // ✅ ADICIONAR
+        lastSavedAt: saveData.savedAt,
         // Visual
         // image: saveData.character.image || characterImage,
       };

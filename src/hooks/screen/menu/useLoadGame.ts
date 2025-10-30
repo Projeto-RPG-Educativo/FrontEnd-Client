@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 
-import type { SaveSlot, SaveData } from '../../../types/Save';
-import { useSave } from '../../../hooks/save/useSave';
+import type { SaveSlot, SaveData } from '../../../types';
+import { useSave } from '../../services/useSave';
 interface DisplaySlot {
   id: number;
   slotNumber: number;
@@ -13,11 +13,11 @@ interface DisplaySlot {
 
 interface UseLoadGameReturn {
   slots: DisplaySlot[];
-  carregando: boolean;
-  erro: string | null;
-  carregarSaves: () => Promise<void>;
-  carregarJogo: (slotId: number) => Promise<SaveData | null>;
-  formatarData: (dataString: string) => string;
+  loading: boolean;
+  error: string | null;
+  loadSaves: () => Promise<void>;
+  loadGame: (slotId: number) => Promise<SaveData | null>;
+  formatDate: (dataString: string) => string;
 }
 
 /**
@@ -53,14 +53,14 @@ interface UseLoadGameReturn {
 export const useLoadGame = (): UseLoadGameReturn => {
   const [slots, setSlots] = useState<DisplaySlot[]>([]);
   const { 
-    listarSaves, 
-    carregarJogo: loadGameService, 
-    carregando, 
-    erro 
+    listSaves, 
+    loadGame: loadGameService, 
+    loading, 
+    error 
   } = useSave();
 
   // Formatar data para exibição
-  const formatarData = useCallback((dataString: string): string => {
+  const formatDate = useCallback((dataString: string): string => {
     try {
       return new Date(dataString).toLocaleDateString('pt-BR', {
         day: '2-digit',
@@ -75,7 +75,7 @@ export const useLoadGame = (): UseLoadGameReturn => {
   }, []);
 
   // Converter SaveSlot para DisplaySlot
-  const converterParaDisplaySlot = useCallback((saveSlot: SaveSlot): DisplaySlot => {
+  const convertToDisplaySlot = useCallback((saveSlot: SaveSlot): DisplaySlot => {
     // Criar SaveData a partir do SaveSlot
     const saveData: SaveData = {
         id: saveSlot.id,
@@ -112,27 +112,27 @@ export const useLoadGame = (): UseLoadGameReturn => {
   }, []);
 
   // Carregar lista de saves
-  const carregarSaves = useCallback(async () => {
-    const saves = await listarSaves();
+  const loadSaves = useCallback(async () => {
+    const saves = await listSaves();
     
     if (saves) {
-      const displaySlots = saves.map(converterParaDisplaySlot);
+      const displaySlots = saves.map(convertToDisplaySlot);
       setSlots(displaySlots);
     }
-  }, [listarSaves, converterParaDisplaySlot]);
+  }, [listSaves, convertToDisplaySlot]);
 
   // Carregar um jogo específico
-  const carregarJogo = useCallback(async (slotId: number): Promise<SaveData | null> => {
+  const loadGame = useCallback(async (slotId: number): Promise<SaveData | null> => {
     const saveData = await loadGameService(slotId.toString());
     return saveData;
   }, [loadGameService]);
 
   return {
     slots,
-    carregando,
-    erro: erro ? erro.message : null,
-    carregarSaves,
-    carregarJogo,
-    formatarData,
+    loading,
+    error: error ? error.message : null,
+    loadSaves,
+    loadGame,
+    formatDate,
   };
 };

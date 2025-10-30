@@ -23,7 +23,6 @@ export interface SaveResponse {
   id: number;
   slotName: string;
   characterName: string;
-  // ... outros campos
 }
 
 /**
@@ -97,7 +96,7 @@ export interface SaveDataFromBackend {
   characterId: number;
   slotName: string;
   savedAt: string;
-  characterState: unknown; // Corretamente tipado como unknown
+  characterState: unknown; 
   character: {
     id: number;
     nome: string;

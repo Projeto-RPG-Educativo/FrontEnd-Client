@@ -1,6 +1,6 @@
 import React from 'react';
-import { useNewGame } from './useNewGame';
-import { NavigationLogic } from '../../../hooks/index';
+import { useNewGame } from '../../../hooks/screen/menu/useNewGame';
+
 import * as S from './save.styles';
 
 interface NewGameProps {
@@ -9,18 +9,15 @@ interface NewGameProps {
 
 const NewGame: React.FC<NewGameProps> = ({ onStartNewGame }) => {
   const {
-    dificuldadeSelecionada,
-    comTutorial,
-    setDificuldade,
-    setComTutorial,
-    iniciarNovoJogo,
-    formularioValido,
-    erro,
-    carregando,
+    selectedDifficulty,
+    withTutorial,
+    loading,
+    error,
+    formValid,
+    setDifficulty,
+    setWithTutorial,
+    startNewGameCreate,
   } = useNewGame();
-
-
-  const { startNewGame } = NavigationLogic();
 
   const difficultyOptions = [
     { 
@@ -59,20 +56,17 @@ const NewGame: React.FC<NewGameProps> = ({ onStartNewGame }) => {
   ];
 
   const handleStartGame = async () => {
-    await iniciarNovoJogo((characterId) => {
+    await startNewGameCreate((characterId) => {
       console.log('✅ Personagem criado:', characterId);
       console.log('🎮 Configurações:', { 
-        dificuldade: dificuldadeSelecionada, 
-        tutorial: comTutorial 
+        selectedDifficulty, 
+        withTutorial,
       });
       
-      // Chama a função passada como prop com as configurações selecionadas
-      if (dificuldadeSelecionada && comTutorial) {
-        onStartNewGame(dificuldadeSelecionada, comTutorial);
+      if (selectedDifficulty && withTutorial) {
+        onStartNewGame(selectedDifficulty, withTutorial);
+        
       }
-      
-      // Inicia o jogo após criar personagem
-      startNewGame();
     });
   };
 
@@ -88,8 +82,8 @@ const NewGame: React.FC<NewGameProps> = ({ onStartNewGame }) => {
           {difficultyOptions.map(({ value, label, description, icon }) => (
             <S.OptionButton
               key={value}
-              $isActive={dificuldadeSelecionada === value}
-              onClick={() => setDificuldade(value)}
+              $isActive={selectedDifficulty === value}
+              onClick={() => setDifficulty(value)}
               title={description}
             >
               <span>{icon}</span>
@@ -109,8 +103,8 @@ const NewGame: React.FC<NewGameProps> = ({ onStartNewGame }) => {
           {tutorialOptions.map(({ value, label, description, icon }) => (
             <S.OptionButton
               key={String(value)}
-              $isActive={comTutorial === value}
-              onClick={() => setComTutorial(value)}
+              $isActive={withTutorial === value}
+              onClick={() => setWithTutorial(value)}
               title={description}
             >
               <span>{icon}</span>
@@ -120,14 +114,14 @@ const NewGame: React.FC<NewGameProps> = ({ onStartNewGame }) => {
         </S.HorizontalButtonsWrapper>
       </S.OptionGroup>
 
-      {erro && <S.ErrorMessage>{erro}</S.ErrorMessage>}
+      {error && <S.ErrorMessage>{error}</S.ErrorMessage>}
 
       <S.ConfirmButtonWrapper>
         <S.ConfirmButton
           onClick={handleStartGame}
-          disabled={!formularioValido || carregando}
+          disabled={!formValid || loading}
         >
-          {carregando ? 'CRIANDO...' : formularioValido ? 'INICIAR AVENTURA' : 'PREENCHA TODOS OS CAMPOS'}
+          {loading ? 'CRIANDO...' : formValid ? 'INICIAR AVENTURA' : 'PREENCHA TODOS OS CAMPOS'}
         </S.ConfirmButton>
       </S.ConfirmButtonWrapper>
     </S.PanelContainer>

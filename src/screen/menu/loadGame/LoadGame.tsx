@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import * as S from '../main/Menu.styles';
-import { useLoadGame } from './useLoadGame';
+import { useLoadGame } from '../../../hooks/screen/menu/useLoadGame';
 
-import type { DisplaySlot, SaveData } from '../../../types/Save';
+import type { DisplaySlot, SaveData } from '../../../types/dto/Save';
 
 interface LoadGameProps {
   slots: DisplaySlot[];
@@ -21,16 +21,14 @@ const LoadGame: React.FC<LoadGameProps> = ({
 }) => {
   
   const {
-    formatarData,
+    formatDate,
   } = useLoadGame();
 
   useEffect(() => {
-    fetchSaves(); // Usa a função do pai
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchSaves();
   }, []);
 
   const handleLoadGameClick = async (slotId: number) => {
-    // Busca o saveData do slot clicado
     const slot = propsSlots.find(s => s.id === slotId);
     if (slot?.saveData) {
       console.log('✅ Jogo carregado:', slot.saveData);
@@ -60,7 +58,7 @@ const LoadGame: React.FC<LoadGameProps> = ({
         <>
           <S.SlotHeader>
             <S.SlotName>{slot.name}</S.SlotName>
-            <S.SlotDate>{formatarData(slot.saveData.createdAt)}</S.SlotDate>
+            <S.SlotDate>{formatDate(slot.saveData.createdAt)}</S.SlotDate>
           </S.SlotHeader>
           
           <S.SlotDetails>

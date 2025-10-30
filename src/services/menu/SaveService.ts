@@ -16,7 +16,6 @@ import  { parseSaveData } from '../../types/mapper/SaveMapper';
 export const listSaves = async (): Promise<SaveSlot[]> => {
   try {
     console.log('📂 [SaveService] Listando saves...');
-    // Fazer request
     const response = await api.get<SaveDataFromBackend[]>('/saves/');
     console.log('📦 [SaveService] Dados brutos recebidos:', response.data.length, 'saves');
 
@@ -48,22 +47,20 @@ export const listSaves = async (): Promise<SaveSlot[]> => {
 };
 
 // ==================== SALVAR JOGO ====================
-export const saveGame = async (data: CreateSaveRequest): Promise<GameSaveResponse> => {
+export const saveGame = async (data: CreateSaveRequest): Promise<void> => {
   try {
     console.log('💾 [SaveService] Salvando jogo...', {
       characterId: data.characterId,
       slotNumber: data.slotName,
     });
     
-    // Fazer request
-    const response = await api.post<GameSaveResponse>('/saves/', {
+    await api.post<GameSaveResponse>('/saves/', {
       characterId: data.characterId,
       slotName: data.slotName || `Slot ${data.slotName || 1}`,
       characterState: data.currentState,
     });
     
     console.log('✅ [SaveService] Jogo salvo com sucesso!');
-    return response.data;
     
   } catch (error: any) {
     console.error('❌ [SaveService] Erro ao salvar jogo:', {
@@ -92,18 +89,16 @@ export const deleteSave = async (
 };
 
 
-// averiguar depois
+// Precisa de correção
 
 export const loadGame = async (saveId: number | string): Promise<SaveData> => {
   try {
-    console.log(`📂 [SaveService] Carregando save ID ${saveId}...`);
+    console.log(`📂 [SaveService] Carregando save por slot: ${saveId}...`);
 
-    // ATENÇÃO: Verifique esta rota. A API_ROTAS.md não tem /saves/{id}
-    const response = await api.get<SaveDataFromBackend>(`/saves/${saveId}`);
+    const response = await api.get<SaveDataFromBackend>(`/saves/slot/${saveId}`);
 
     console.log('📦 [SaveService] Dados brutos carregados:', response.data);
 
-    // Usando o Mapper importado! Perfeito.
     const parsed = parseSaveData(response.data);
 
     if (!parsed) {
