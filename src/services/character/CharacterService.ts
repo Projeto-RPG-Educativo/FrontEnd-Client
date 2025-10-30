@@ -1,25 +1,23 @@
 import api from '../api/api';
-import type { 
-  Player, 
-  ClassName,
+
+import type {
+  GameClassDTO,
+  CharacterListResponse,
+  CharacterResponse,
   CreateCharacterRequest,
   UpdateCharacterRequest,
-  CharacterResponse,
-  ClassResponse
-} from '../../types/Character';
+  Player
+} from '../../types';
 
-// Alias para Character (compatibilidade com hooks)
-export type Character = CharacterResponse;
+import { mapCharacterToPlayer } from '../../types/mapper/PlayerMapper';
 
 // ==================== BUSCAR CLASSES DISPONÍVEIS ====================
-export const getAvailableClasses = async (): Promise<ClassResponse[]> => {
+export const getAvailableClasses = async (): Promise<GameClassDTO[]> => {
   try {
-    console.log('🎭 [CharacterService] Buscando classes disponíveis...');
-    
-    const response = await api.get<ClassResponse[]>('/character/classes');
-    
+    const response = await api.get<GameClassDTO[]>('/classes');
     console.log(`✅ [CharacterService] ${response.data.length} classes encontradas.`);
     return response.data;
+
   } catch (error: any) {
     console.error('❌ [CharacterService] Erro ao buscar classes:', error.response?.data);
     throw new Error(error.response?.data?.message || 'Erro ao buscar classes disponíveis');
@@ -27,14 +25,12 @@ export const getAvailableClasses = async (): Promise<ClassResponse[]> => {
 };
 
 // ==================== LISTAR PERSONAGENS ====================
-export const listCharacters = async (): Promise<CharacterResponse[]> => {
+export const listCharacters = async (): Promise<CharacterListResponse[]> => {
   try {
-    console.log('📂 [CharacterService] Listando personagens...');
-    
-    const response = await api.get<CharacterResponse[]>('/character/classes');
-    
+    const response = await api.get<CharacterListResponse[]>('/characters');
     console.log(`✅ [CharacterService] ${response.data.length} personagens encontrados.`);
     return response.data;
+
   } catch (error: any) {
     console.error('❌ [CharacterService] Erro ao listar personagens:', error.response?.data);
     throw new Error(error.response?.data?.message || 'Erro ao listar personagens');
@@ -45,11 +41,9 @@ export const listCharacters = async (): Promise<CharacterResponse[]> => {
 export const createCharacter = async (data: CreateCharacterRequest): Promise<CharacterResponse> => {
   try {
     console.log('➕ [CharacterService] Criando personagem...', data);
-    
-    const response = await api.post<CharacterResponse>('/character/criar', data);
-    
-    console.log('✅ [CharacterService] Personagem criado:', response.data.nome);
+    const response = await api.post<CharacterResponse>('/characters', data);
     return response.data;
+
   } catch (error: any) {
     console.error('❌ [CharacterService] Erro ao criar personagem:', error.response?.data);
     throw new Error(error.response?.data?.message || 'Erro ao criar personagem');
@@ -60,11 +54,9 @@ export const createCharacter = async (data: CreateCharacterRequest): Promise<Cha
 export const getCharacterById = async (id: number): Promise<CharacterResponse> => {
   try {
     console.log(`🔍 [CharacterService] Buscando personagem ID ${id}...`);
-    
     const response = await api.get<CharacterResponse>(`/character/${id}`);
-    
-    console.log('✅ [CharacterService] Personagem encontrado:', response.data.nome);
     return response.data;
+
   } catch (error: any) {
     console.error('❌ [CharacterService] Erro ao buscar personagem:', error.response?.data);
     throw new Error(error.response?.data?.message || 'Erro ao buscar personagem');
@@ -81,11 +73,9 @@ export const updateCharacter = async (
 ): Promise<CharacterResponse> => {
   try {
     console.log(`✏️ [CharacterService] Atualizando personagem ID ${id}...`, data);
-    
-    const response = await api.put<CharacterResponse>(`/character/save-progress/${id}`, data);
-    
-    console.log('✅ [CharacterService] Personagem atualizado:', response.data.nome);
+    const response = await api.put<CharacterResponse>(`/characters/progress/${id}`, data);
     return response.data;
+
   } catch (error: any) {
     console.error('❌ [CharacterService] Erro ao atualizar personagem:', error.response?.data);
     throw new Error(error.response?.data?.message || 'Erro ao atualizar personagem');
@@ -96,9 +86,7 @@ export const updateCharacter = async (
 export const deleteCharacter = async (id: number | string): Promise<{ message: string }> => {
   try {
     console.log(`🗑️ [CharacterService] Deletando personagem ID ${id}...`);
-    
     await api.delete(`/characters/${id}`);
-    
     console.log('✅ [CharacterService] Personagem deletado.');
     return { message: 'Personagem deletado com sucesso' };
   } catch (error: any) {
@@ -107,20 +95,20 @@ export const deleteCharacter = async (id: number | string): Promise<{ message: s
   }
 };
 
-// ==================== CONVERTER PARA PLAYER (Helper) ====================
-export const convertToPlayer = (char: CharacterResponse): Player => {
-  return {
-    id: char.id,
-    name: char.nome,
-    className: char.classe as ClassName,
-    hp: char.hp,
-    maxHp: char.maxHp,
-    stamina: char.stamina,
-    maxStamina: char.maxStamina,
-    damage: 10, // Valor padrão, ajustar conforme necessário
-    level: char.level,
-    coins: char.coins,
-    abilityUsed: false,
-    // image: char.image || '',
-  };
+
+export const getPlayerCharacter = async (id: number): Promise<Player> => {
+  try {
+   
+    console.log(`🔍 [CharacterService] Buscando DTO do personagem ID ${id}...`);
+    const characterDto = await getCharacterById(id);
+    console.log('🔄 [CharacterService] Mapeando DTO para Modelo Player...');
+    const playerModel = mapCharacterToPlayer(characterDto);
+
+    console.log('✅ [CharacterService] Modelo Player pronto:', playerModel.nome);
+    return playerModel;
+    
+  } catch (error: any) {
+    console.error('❌ [CharacterService] Erro ao buscar e mapear Player:', error);
+    throw new Error(error.message || 'Erro ao carregar personagem');
+  }
 };

@@ -1,7 +1,7 @@
 // src/components/Hub/HubZoneRouter.tsx
 
 import React from 'react';
-import { type HubState } from '../../../contexts';
+import { type HubState } from '../../../contexts/GameContext';
 import { type Player } from '../../../types';
 import Central from '../central/Central';
 import PlaceholderZoneScreen from '../PlaceHolderZoneScreen'; 
@@ -17,6 +17,8 @@ interface HubZoneRouterProps {
   onBuyItem: (itemId: string, cost: number) => void;
   onStartQuizBattle: () => void;
   onBack: () => void;
+  setGameState: (state: 'HUB' | 'BATTLE' | 'MENU') => void;
+    startBattle: (monsterId: number, difficulty: "facil" | "medio" | "dificil") => Promise<void>;
 }
 
 const HubZoneRouter: React.FC<HubZoneRouterProps> = (props) => {
@@ -76,7 +78,12 @@ const HubZoneRouter: React.FC<HubZoneRouterProps> = (props) => {
           onRest={props.onRest} 
           onBuyItem={props.onBuyItem}
         />
-      );
+      ); 
+
+    case 'EXIT':
+      props.startBattle && props.startBattle(1, 'facil');
+      props.setGameState('BATTLE');
+      return null;
 
     case 'CENTRAL':
     default:

@@ -1,9 +1,9 @@
 import React from 'react';
 import ClassCardGrid from './components/ClassCardGrid'; 
 import ClassDetailPanel from './components/ClassDetailPanel'; 
-import { ClassLogic } from '../../hooks/class/ClassLogic';
+import { ClassLogic } from '../../hooks/screen/character/useClassSelection';
 import * as S from './Class.styles';
-import { type ClassName } from '../../types/Character';
+import { type ClassName } from '../../types';
 
 const ClassSelectionScreen: React.FC = () => {
   const {

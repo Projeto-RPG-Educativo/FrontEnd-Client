@@ -1,11 +1,6 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-
-// Define o formato que esperamos para os dados de um usuário
-interface User {
-  id: number;
-  nome_usuario: string;
-}
+import type { User } from '../types/dto/User';
 
 // Define todas as informações que nosso contexto vai fornecer
 interface AuthContextData {
@@ -42,6 +37,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     setIsLoggedIn(false);
   };
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>

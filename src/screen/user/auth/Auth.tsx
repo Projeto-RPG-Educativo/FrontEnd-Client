@@ -3,13 +3,9 @@ import { AuthContext } from '../../../contexts/AuthContext';
 
 import {Login, Register} from '../../index';
 
-/**
- * AuthScreen: Componente orquestrador das telas de autenticação.
- * Gerencia a navegação entre login e registro.
- */
+
 const Auth: React.FC = () => {
   const { login } = useContext(AuthContext);
-  
   // Controla qual tela está visível: false = Login, true = Registro
   const [isRegistering, setIsRegistering] = useState(false);
   

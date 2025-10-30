@@ -8,7 +8,8 @@ export { default as Login } from './user/login/Login';
 export { default as Register } from './user/register/Register';
 
 export { default as ClassSelection } from './classSelection/ClassSelection';
-
+export { default as BattleScreen } from './battle/BattleScreen';
+export { default as QuizScreen } from './quiz/QuizScreen';
 
 export { default as ZoneRouter } from './hub/router/ZoneRouter';
 export { default as Central } from './hub/central/Central';
@@ -21,8 +22,8 @@ export { default as ClassRoom } from './hub/tower/floors/F3/ClassRoom';
 export { default as Laboratory } from './hub/tower/floors/F4/Laboratory';
 export { default as TowerMasterRoom } from './hub/tower/floors/F5/TowerMasterRoom';
 
-export { useLoadGame } from './menu/loadGame/useLoadGame';
-export { useNewGame } from './menu/newGame/useNewGame';
+export { useLoadGame } from '../hooks/screen/menu/useLoadGame';
+export { useNewGame } from '../hooks/screen/menu/useNewGame';
 
-export { useLogin } from './user/login/useLogin';
-export { useRegister } from './user/register/useRegister';
+export { useLogin } from '../hooks/screen/auth/useLogin';
+export { useRegister } from '../hooks/screen/auth/useRegister';

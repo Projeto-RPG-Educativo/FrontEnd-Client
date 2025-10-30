@@ -1,8 +1,8 @@
 import React from 'react';
 import { type Player } from '../../../types';
 import { HubContainer, Hotspot, StretchedImage } from '../Hub.styles'; 
-import { HUB_IMAGES } from '../../../constants/assets/HubAssets';
-import { HubLogic } from '../../../hooks/hub/HubLogic';
+import { HUB_IMAGES } from '../../../constants/assets/background/HubAssets';
+import { HubLogic } from '../../../hooks/screen/hub/useHubScreen';
 
 // --- Tipagem ---
 type HubZone = 'TOWER' | 'ARENA' | 'LIBRARY' | 'SHOP' | 'EXIT';
@@ -13,13 +13,13 @@ interface CentralProps {
 
 const Central: React.FC<CentralProps> = ({ player }) => {
   // ✅ Usar o hook diretamente
-  const { goToHubZone, goToMainMenu } = HubLogic();
+  const { goToHubZone, goToExit } = HubLogic();
   
   // ✅ Handler unificado
   const handleZoneClick = (zone: HubZone) => {
     if (zone === 'EXIT') {
       console.log('🚪 Saindo do hub');
-      goToMainMenu();
+      goToExit();
     } else {
       console.log('🗺️ Indo para zona:', zone);
       goToHubZone(zone);

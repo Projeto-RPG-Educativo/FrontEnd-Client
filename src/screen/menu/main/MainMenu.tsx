@@ -4,13 +4,13 @@ import LoadGame from '../loadGame/LoadGame';
 import Settings from '../settings/Settings';
 import * as S from './Menu.styles'; 
 
-import type { DisplaySlot, SaveData } from '../../../types/Save';
+import { useMenuScreen } from '../../../hooks/screen/menu/useMenuScreen';
+
+import type { SaveSlot, SaveData } from '../../../types/dto/Save';
 
 interface MainMenuProps {
-  onStartNewGame: (difficulty: 'facil' | 'medio' | 'dificil', withTutorial: boolean) => void;
-  onGoToSettings: () => void;
   onLogout: () => void;
-  slots: DisplaySlot[];
+  slots: SaveSlot[];
   isLoadingSaves: boolean;
   errorSaves: string | null;
   onFetchSaves: () => void;
@@ -19,15 +19,17 @@ interface MainMenuProps {
 
 type ActiveMenu = 'newGame' | 'loadGame' | 'settings';
 
-export default function MainMenu({ 
-  onStartNewGame, 
+export default function MainMenu({
   onLogout,
   slots,
   isLoadingSaves,
   errorSaves,
   onFetchSaves,
-  onLoadGame
-}: MainMenuProps) {
+  onLoadGame,
+}:MainMenuProps){
+    const { 
+      handleStartNewGame,
+    } = useMenuScreen();
 
   const [activeMenu, setActiveMenu] = useState<ActiveMenu>('newGame');
   
@@ -41,7 +43,7 @@ export default function MainMenu({
   const renderContent = () => {
     switch (activeMenu) {
       case 'newGame':
-        return <NewGame onStartNewGame={onStartNewGame} />;
+        return <NewGame onStartNewGame={handleStartNewGame}  />;
       case 'loadGame':
         return (
           <LoadGame
@@ -55,10 +57,10 @@ export default function MainMenu({
       case 'settings':
         return <Settings />;
       default:
-        return <NewGame onStartNewGame={onStartNewGame} />;
+        return <NewGame onStartNewGame={handleStartNewGame} />;
     }
   };
-  
+
   return (
     <S.Container>
       <S.MainContentWrapper>

@@ -1,28 +1,24 @@
-import api from '../api/api';
-import type { AuthResponse } from '../../types/User';
+import api from '../../services/api/api';
+
+import type {
+  LoginUserRequest,
+  RegisterUserRequest,
+  LoginResponse,
+} from '../../types';
 
 // ==================== LOGIN ====================
-/**
- * Realiza login do usuário
- * @param email Email do usuário
- * @param senha Senha do usuário
- * @returns Token e dados do usuário
- */
-export const login = async (usuario: string, senha: string): Promise<AuthResponse> => {
+
+export const login = async (data: LoginUserRequest): Promise<LoginResponse> => {
   try {
     console.log('🔐 [AuthService] Fazendo login...');
-    
-    const response = await api.post<AuthResponse>('/usuarios/login', {
-      nome_usuario: usuario,
-      senha: senha,
-    });
-    
-    // Salvar token no localStorage
+
+    const response = await api.post<LoginResponse>('/auth/login', data);
+
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       console.log('✅ [AuthService] Login bem-sucedido. Token salvo.');
     }
-    
+
     return response.data;
   } catch (error: any) {
     console.error('❌ [AuthService] Erro ao fazer login:', error.response?.data);
@@ -31,33 +27,18 @@ export const login = async (usuario: string, senha: string): Promise<AuthRespons
 };
 
 // ==================== REGISTRO ====================
-/**
- * Registra um novo usuário
- * @param nome Nome do usuário
- * @param email Email do usuário
- * @param senha Senha do usuário
- * @returns Token e dados do usuário
- */
+
 export const register = async (
-  nome: string,
-  email: string,
-  senha: string
-): Promise<AuthResponse> => {
+  data: RegisterUserRequest
+): Promise<LoginResponse> => {
   try {
     console.log('📝 [AuthService] Registrando novo usuário...');
-    
-    const response = await api.post<AuthResponse>('/usuarios/registrar', {
-      nome_usuario: nome,
-      email,
-      senha: senha,
-    });
-    
-    // Salvar token no localStorage
+    const response = await api.post<LoginResponse>('/auth/register', data);
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       console.log('✅ [AuthService] Registro bem-sucedido. Token salvo.');
     }
-    
+
     return response.data;
   } catch (error: any) {
     console.error('❌ [AuthService] Erro ao registrar:', error.response?.data);

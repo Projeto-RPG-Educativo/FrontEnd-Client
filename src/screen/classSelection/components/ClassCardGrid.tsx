@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { type ClassName, type FullClassData } from '../../../types/Character';
+import { type ClassName, type FullClassData } from '../../../types';
 import * as S from '../Class.styles';
 import { CHARACTER_IMAGES, classNameToImageType } from '../../../constants/assets/CharacterAssets';
 

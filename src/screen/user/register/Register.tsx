@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRegister } from './useRegister';
+import { useRegister } from '../../../hooks/screen/auth/useRegister';
 import * as S from '../User.styles';
 
 interface RegisterScreenProps {

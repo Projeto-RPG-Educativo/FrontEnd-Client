@@ -19,7 +19,7 @@ import {
   WelcomeMessage,
 } from './Inn.styles';
 
-import {INN_IMAGES } from '../../../constants/assets/InnAssets';
+import {INN_IMAGES } from '../../../constants/assets/background/InnAssets';
 
 interface InnProps {
   player: Player | null;

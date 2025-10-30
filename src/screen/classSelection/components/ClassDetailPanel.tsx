@@ -1,7 +1,7 @@
 import React from 'react';
 import { AnimatePresence } from 'framer-motion';
 import * as S from '../Class.styles';
-import type { FullClassData } from '../../../types/Character';
+import type { FullClassData } from '../../../types';
 
 interface ClassDetailsPanelProps {
   selectedClass: FullClassData | null;
