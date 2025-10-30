@@ -17,6 +17,7 @@ export interface CheckAnswerResponse {
 export interface CheckAnswerRequest {
   questionId: number;
   answer: string;
+  battleId: string;
 }
 
 
@@ -67,6 +68,16 @@ export interface QuestionFromBackend {
   points: number;
 }
 
-export interface RandomQuestionResponse {
-  question: QuestionFromBackend;
+export interface ApiQuestionResponse {
+  id: number;
+  questionText: string;
+  optionA: string;
+  optionB: string;
+  optionC: string;
+  correctAnswer: string;
+  difficulty: 'Facil' | 'Medio' | 'Dificil';
+  questionContent: string;
+  minLevel: number;
+  hint: string;
+  contentID: number;
 }

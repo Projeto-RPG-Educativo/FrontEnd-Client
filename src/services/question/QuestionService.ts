@@ -1,36 +1,43 @@
 import api from '../api/api';
 
 import type {
-  // DTO de resposta (o wrapper)
-  RandomQuestionResponse,
-  // DTO da questão em si (a resposta da API)
+  ApiQuestionResponse, 
   QuestionFromBackend,
-  // Helper para construir a query string (estava correto)
   QuestionRandomRequest,
-} from '../../types'; // <-- Caminho atualizado
+  CheckAnswerRequest,
+  CheckAnswerResponse,
+} from '../../types';
 
 export const getRandomQuestion = async (
   data: QuestionRandomRequest
-): Promise<QuestionFromBackend> => { 
+): Promise<QuestionFromBackend> => {
   try {
-
     const params = new URLSearchParams({
       difficulty: data.difficulty,
       playerLevel: data.playerLevel.toString(),
     });
-    
     if (data.contentId) {
       params.append('contentId', data.contentId.toString());
     }
 
-
-    const response = await api.get<RandomQuestionResponse>(
+    const response = await api.get<ApiQuestionResponse>(
       `/questions/random?${params.toString()}`
     );
 
-    // Retorna apenas a questão de dentro do wrapper, que é do tipo 'QuestionFromBackend'
-    return response.data.question;
+    const apiData = response.data;
 
+    const formattedQuestion: QuestionFromBackend = {
+      id: apiData.id,
+      text: apiData.questionText,
+      options: [apiData.optionA, apiData.optionB, apiData.optionC],
+      correctAnswer: apiData.correctAnswer,
+      difficulty: apiData.difficulty.toLowerCase() as 'facil' | 'medio' | 'dificil',
+      category: apiData.questionContent,
+      points: 10,
+    };
+
+    return formattedQuestion;
+    
   } catch (error: any) {
     console.error('❌ [QuestionService] Erro ao buscar questão aleatória:', {
       status: error.response?.status,
@@ -40,6 +47,22 @@ export const getRandomQuestion = async (
   }
 };
 
+export const checkAnswer = async (
+  data: CheckAnswerRequest
+): Promise<CheckAnswerResponse> => {
+  try {
+    const response = await api.post<CheckAnswerResponse>('/questions/check', data);
+    return response.data;
+  } catch (error: any) {
+    console.error('❌ [QuestionService] Erro ao verificar resposta:', {
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message,
+    });
+    throw new Error(error.response?.data?.message || 'Erro ao verificar resposta');
+  }
+};
+
 export default {
   getRandomQuestion,
+  checkAnswer,
 };
