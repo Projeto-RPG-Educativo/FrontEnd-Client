@@ -29,3 +29,5 @@ export { useNewGame } from '../hooks/screen/menu/useNewGame';
 
 export { useLogin } from '../hooks/screen/auth/useLogin';
 export { useRegister } from '../hooks/screen/auth/useRegister';
+
+export { default as Loading } from './loading/Loading'

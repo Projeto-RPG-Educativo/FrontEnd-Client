@@ -16,12 +16,29 @@ export const EnemyHudContainer = styled.div`
   width: 80%;
 `;
 
-export const EnemyHud = styled.div`
+export const EnemyHud = styled.div<{ $isDefending?: boolean }>`
   background-color: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0;
+  border: ${props => props.$isDefending ? '2px solid #4CAF50' : 'none'};
+  border-radius: ${props => props.$isDefending ? '8px' : '0'};
+  box-shadow: ${props => props.$isDefending 
+    ? '0 0 15px rgba(76, 175, 80, 0.6)' 
+    : 'none'};
+  padding: ${props => props.$isDefending ? '10px' : '0'};
   width: 100%;
+  transition: all 0.3s ease;
+  
+  ${props => props.$isDefending && `
+    animation: defendPulse 1.5s ease-in-out infinite;
+    
+    @keyframes defendPulse {
+      0%, 100% {
+        box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+      }
+      50% {
+        box-shadow: 0 0 25px rgba(76, 175, 80, 0.9);
+      }
+    }
+  `}
 `;
 
 export const EnemyHudStats = styled.div`

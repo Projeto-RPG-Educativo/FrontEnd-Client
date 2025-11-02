@@ -26,9 +26,30 @@ export const ActionIconButton = styled.button<{
   height: 60px;
   text-indent: -9999px;
   width: 60px;
+  transition: all 0.3s ease;
 
   background-color: transparent;
   background-image: ${props => `url(${getIconByAction(props.$action)})`};
+
+  &:hover {
+    transform: scale(1.1);
+    border-color: #FFD700;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    filter: grayscale(100%);
+    
+    &:hover {
+      transform: none;
+      border-color: #5d4037;
+    }
+  }
 
   &:hover::after {
     background-color: rgba(0, 0, 0, 0.8);

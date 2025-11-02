@@ -13,7 +13,7 @@ import {
 } from '../components/index';
 
 // screens
-import { Auth, MainMenu, ClassSelection, ZoneRouter, BattleScreen, QuizScreen, TutorialOverlay } from '../screen/index';
+import { Auth, MainMenu, ClassSelection, ZoneRouter, BattleScreen, QuizScreen, TutorialOverlay, Loading } from '../screen/index';
 
 // hooks 
 import { SaveLogic, HubLogic, useBattleScreen, TutorialLogic } from '../hooks/index'
@@ -65,6 +65,9 @@ const App: React.FC = () => {
       case 'CLASS_SELECTION':
         return <ClassSelection />;
 
+      case 'LOADING':
+        return <Loading onLoadingComplete={ () => setGameState('HUB')} />;
+
       case 'HUB':
         return (
           <ZoneRouter
@@ -94,7 +97,8 @@ const App: React.FC = () => {
           onOpenQuiz={openQuiz}
           onCombatAction={(actionName) => executeBattleAction({ action: actionName })}
         />);
-
+      
+      
 
       case 'QUIZ':
         if (!currentQuestion) {
@@ -106,13 +110,16 @@ const App: React.FC = () => {
             gameMessage={gameMessage}
             onAnswer={answerQuestion}
             onCloseQuiz={closeQuiz}
+            playerEnergy={player?.stamina}
+            playerMaxEnergy={player?.maxStamina}
           />
         );
-        
+      
       default:
         return null;
     }
   };
+
 
   return (
     <>
@@ -129,8 +136,6 @@ const App: React.FC = () => {
     </>
   )
 };
-
-
 
 const AppWrapper: React.FC = () => {
   return (

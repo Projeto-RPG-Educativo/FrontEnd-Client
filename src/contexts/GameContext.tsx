@@ -4,8 +4,10 @@ import type { Player, Monster, ClassName, BattleStateResponse, Question, Questio
 export type Difficulty = QuestionDifficulty;
 
 export type GameState = 
+  | 'INTRO'
   | 'MENU'
   | 'CLASS_SELECTION'
+  | 'LOADING'
   | 'HUB'
   | 'BATTLE'
   | 'QUIZ'
@@ -22,6 +24,7 @@ export type HubState =
   | 'INN'
   | 'EXIT'
 ;
+
 interface GameContextType {
   // === ESTADOS PRINCIPAIS ===
   gameState: GameState;

@@ -30,5 +30,6 @@ export interface Player {
   level?: number;
   coins?: number;
   abilityUsed?: boolean;
+  isDefending?: boolean;
 }
 

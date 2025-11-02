@@ -4,6 +4,9 @@ import {
   performBattleAction,
   submitAnswer,
   saveBattleProgress,
+  executeMonsterTurn,
+  skipTurn,
+  getCurrentBattle,
 } from '../../services/';
 
 
@@ -26,7 +29,10 @@ interface UseBattleReturn {
   saveProgress: (data: BattleSaveProgressRequestlegado) => Promise<BattleSaveProgressResponseLegado | null>; 
   clearBattle: () => void;
   clearError: () => void;
-  submitAnswer: (data: SubmitAnswerRequest) => Promise<BattleStateResponse | null>; 
+  submitAnswer: (data: SubmitAnswerRequest) => Promise<BattleStateResponse | null>;
+  executeMonsterTurn: () => Promise<BattleStateResponse | null>;
+  skipTurn: () => Promise<BattleStateResponse | null>;
+  getCurrentBattle: () => Promise<BattleStateResponse | null>;
 }
 
 /**
@@ -106,6 +112,53 @@ export const useBattle = (): UseBattleReturn => {
     }
   };
 
+  const handleExecuteMonsterTurn = async (): Promise<BattleStateResponse | null> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const updatedBattle = await executeMonsterTurn();
+      setBattle(updatedBattle);
+      return updatedBattle;
+    } catch (err) {
+      setError(err as Error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSkipTurn = async (): Promise<BattleStateResponse | null> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const updatedBattle = await skipTurn();
+      setBattle(updatedBattle);
+      return updatedBattle;
+    } catch (err) {
+      setError(err as Error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGetCurrentBattle = async (): Promise<BattleStateResponse | null> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const currentBattle = await getCurrentBattle();
+      if (currentBattle) {
+        setBattle(currentBattle);
+      }
+      return currentBattle;
+    } catch (err) {
+      setError(err as Error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const clearBattle = () => {
     setBattle(null);
   };
@@ -125,5 +178,8 @@ export const useBattle = (): UseBattleReturn => {
     clearBattle,
     clearError,
     submitAnswer: handleAnswerQuestion,
+    executeMonsterTurn: handleExecuteMonsterTurn,
+    skipTurn: handleSkipTurn,
+    getCurrentBattle: handleGetCurrentBattle,
   };
 };
