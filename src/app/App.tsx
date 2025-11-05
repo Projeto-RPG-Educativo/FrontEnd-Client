@@ -4,6 +4,7 @@ import React, { useContext, useEffect } from 'react';
 import {
   AuthProvider, AuthContext,
   FullscreenProvider, GameProvider, useGame,
+  TutorialProvider, useTutorial,
 } from '../contexts/index';
 
 // components
@@ -11,12 +12,13 @@ import {
   Layout,
   ErrorBoundary,
 } from '../components/index';
+import { TutorialCutscene } from '../components/tutorial';
 
 // screens
-import { Auth, MainMenu, ClassSelection, ZoneRouter, BattleScreen, QuizScreen, TutorialOverlay, Loading } from '../screen/index';
+import { Auth, MainMenu, ClassSelection, ZoneRouter, BattleScreen, QuizScreen, Loading } from '../screen/index';
 
 // hooks 
-import { SaveLogic, HubLogic, useBattleScreen, TutorialLogic } from '../hooks/index'
+import { SaveLogic, HubLogic, useBattleScreen } from '../hooks/index'
 
 const App: React.FC = () => {
   const { isLoggedIn, logout } = useContext(AuthContext);
@@ -25,6 +27,7 @@ const App: React.FC = () => {
     hubState, player, enemy,
     currentQuestion,
     gameMessage,
+    tutorial,
   } = useGame();
 
   const {
@@ -33,17 +36,27 @@ const App: React.FC = () => {
 
   const { goToHubCentral, goToHubZone } = HubLogic();
   const { executeBattleAction, openQuiz, closeQuiz, answerQuestion, startBattle } = useBattleScreen();
+
+  // Novo sistema de tutorial unificado
   const {
-    dialogueData,
-    currentDialogueIndex,
-    characterImages,
-    advanceDialogue,
-    isTutorialLoading
-  } = TutorialLogic({ gamestate, setGameState });
+    currentCutscene,
+    isOverlay,
+    completeCutscene,
+    tutorialState,
+    startTutorial,
+  } = useTutorial();
 
   useEffect(() => {
     console.log('%c O ESTADO DO JOGO MUDOU PARA:', 'color: lightblue; font-size: 10px;', gamestate);
   }, [gamestate]);
+
+  // Inicia o tutorial automaticamente quando gameState é TUTORIAL e tutorial não foi iniciado
+  useEffect(() => {
+    if (gamestate === 'TUTORIAL' && tutorialState === 'NOT_STARTED') {
+      console.log('🎮 [App] Iniciando tutorial automaticamente');
+      startTutorial();
+    }
+  }, [gamestate, tutorialState, startTutorial]);
 
 
   if (!isLoggedIn) {
@@ -66,7 +79,16 @@ const App: React.FC = () => {
         return <ClassSelection />;
 
       case 'LOADING':
-        return <Loading onLoadingComplete={ () => setGameState('HUB')} />;
+        return <Loading 
+          onLoadingComplete={() => {
+            if (tutorial) {
+              setGameState('TUTORIAL');
+            } else {
+              setGameState('HUB');
+            }
+          }} 
+          tutorialEnabled={tutorial ?? false}
+        />;
 
       case 'HUB':
         return (
@@ -88,15 +110,29 @@ const App: React.FC = () => {
         );
       case 'BATTLE':
         if (!player || !enemy) return null;
-        return (<BattleScreen
-          player={player}
-          monster={enemy}
-          gameMessage={null}
-          onGoToMenu={() => setGameState('MENU')}
-          onPauseGame={() => setGameState('MENU')}
-          onOpenQuiz={openQuiz}
-          onCombatAction={(actionName) => executeBattleAction({ action: actionName })}
-        />);
+        return (
+          <>
+            <BattleScreen
+              player={player}
+              monster={enemy}
+              gameMessage={null}
+              onGoToMenu={() => setGameState('MENU')}
+              onPauseGame={() => setGameState('MENU')}
+              onOpenQuiz={openQuiz}
+              onCombatAction={(actionName) => executeBattleAction({ action: actionName })}
+            />
+            {/* Renderiza a cutscene como overlay se necessário */}
+            {isOverlay && currentCutscene && (
+              <TutorialCutscene
+                cutscene={currentCutscene}
+                selectedClass={player?.className ?? null}
+                onComplete={completeCutscene}
+                autoStart={true}
+                isOverlay={true}
+              />
+            )}
+          </>
+        );
       
       
 
@@ -115,6 +151,19 @@ const App: React.FC = () => {
           />
         );
       
+      case 'TUTORIAL':
+        if (!currentCutscene) return null;
+        
+        return (
+          <TutorialCutscene
+            cutscene={currentCutscene}
+            selectedClass={player?.className ?? null}
+            onComplete={completeCutscene}
+            autoStart={true}
+            isOverlay={false}
+          />
+        );
+
       default:
         return null;
     }
@@ -124,15 +173,6 @@ const App: React.FC = () => {
   return (
     <>
       {renderGameContent()}
-
-      {dialogueData && (
-        <TutorialOverlay
-          dialogueData={dialogueData}
-          currentDialogueIndex={currentDialogueIndex}
-          onAdvanceDialogue={advanceDialogue}
-          characterImages={characterImages}
-        />
-      )}
     </>
   )
 };
@@ -143,9 +183,11 @@ const AppWrapper: React.FC = () => {
       <AuthProvider>
         <FullscreenProvider>
           <GameProvider>
-            <Layout>
-              <App />
-            </Layout>
+            <TutorialProvider>
+              <Layout>
+                <App />
+              </Layout>
+            </TutorialProvider>
           </GameProvider>
         </FullscreenProvider>
       </AuthProvider>

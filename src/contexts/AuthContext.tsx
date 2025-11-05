@@ -1,12 +1,12 @@
 import { createContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { User } from '../types/dto/User';
+import type { UserDto } from '../types/dto/Auth';
 
 // Define todas as informações que nosso contexto vai fornecer
 interface AuthContextData {
   isLoggedIn: boolean;
-  user: User | null;
-  login: (token: string, userData: User) => void;
+  user: UserDto | null;
+  login: (token: string, userData: UserDto) => void;
   logout: () => void;
 }
 
@@ -15,7 +15,7 @@ export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
 
 // Cria o Componente Provedor que vai "abraçar" nossa aplicação
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserDto | null>(null);
 
   // O estado inicial de 'isLoggedIn' verifica se já existe um token no navegador
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   });
 
   // Função para executar quando o login for bem-sucedido
-  const login = (token: string, userData: User) => {
+  const login = (token: string, userData: UserDto) => {
     console.log('AuthContext: Login bem-sucedido! Alterando isLoggedIn para true.');
     localStorage.setItem('authToken', token);
     setUser(userData);

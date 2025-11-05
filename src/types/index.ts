@@ -7,4 +7,4 @@ export * from './dto/Question';
 export * from './dto/Save';
 export * from './dto/Auth';
 export * from './dto/Hub';
-export * from './dto/tutorial';
+export * from './dto/Tutorial.types'; // Tipos unificados do tutorial

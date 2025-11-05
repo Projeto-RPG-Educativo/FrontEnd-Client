@@ -9,6 +9,7 @@ import type {
 } from '../../../types';
 import type { Question, QuestionFromBackend, Player, Monster } from '../../../types';
 import { useGame } from '../../../contexts/GameContext';
+import { useTutorial } from '../../../contexts';
 
 interface UseBattleReturn {
   // Estado da batalha
@@ -67,6 +68,8 @@ export const useBattleScreen = (): UseBattleReturn => {
     setGameMessage,
     setGameState,
   } = useGame();
+
+  const { isBattleTutorialActive, onMonsterDefeated } = useTutorial();
 
   const {
     startBattle: startBattleService,
@@ -237,6 +240,12 @@ export const useBattleScreen = (): UseBattleReturn => {
           // Jogador venceu
           vencedor = 'Você venceu!';
           playerWon = true;
+          
+          // Se está no tutorial de batalha, notifica que o monstro morreu
+          if (isBattleTutorialActive) {
+            console.log('💀 [Battle] Monstro morreu durante tutorial');
+            onMonsterDefeated();
+          }
         } else if (monsterHP > 0 && playerHP <= 0) {
           // Monstro venceu
           vencedor = 'Você foi derrotado!';

@@ -13,12 +13,7 @@ export const useMenuScreen = () => {
   const handleStartNewGame = (difficulty: 'facil' | 'medio' | 'dificil', tutorial: boolean) => {
     setDifficulty(difficulty);
     setTutorial(tutorial);
-
-    if (tutorial){
-      setGameState('TUTORIAL');
-    } else {
     setGameState('CLASS_SELECTION');
-    }
     console.log(`Menu: Dificuldade: ${difficulty}, Tutorial: ${tutorial}`);
   };
 

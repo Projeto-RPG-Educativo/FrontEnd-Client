@@ -14,6 +14,8 @@ export const EnemyHudContainer = styled.div`
   max-width: 900px;
   padding: 0;
   width: 80%;
+  position: relative;
+  z-index: 9999; /* Acima do overlay do tutorial */
 `;
 
 export const EnemyHud = styled.div<{ $isDefending?: boolean }>`

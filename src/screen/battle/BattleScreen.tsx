@@ -121,6 +121,8 @@ const BattleScreen: React.FC<BattleScreenProps> = ({
       <S.BattleLogArea $isVisible={showBattleLog}>
         <BattleLog logs={battleLogs} />
       </S.BattleLogArea>
+
+      {/* Tutorial agora é gerenciado pelo TutorialCutscene no App.tsx */}
     </S.BattleScreenContainer>
   );
 };

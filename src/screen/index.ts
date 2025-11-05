@@ -11,7 +11,9 @@ export { default as ClassSelection } from './classSelection/ClassSelection';
 export { default as BattleScreen } from './battle/BattleScreen';
 export { default as QuizScreen } from './quiz/QuizScreen';
 
-export { default as TutorialOverlay } from './tutorial/TutorialOverlay';
+// Cutscene (genérico, usado fora do tutorial)
+export { default as Cutscene } from './cutscene/Cutscene';
+export type { CutsceneDialogue } from './cutscene/Cutscene';
 
 export { default as ZoneRouter } from './hub/router/ZoneRouter';
 export { default as Central } from './hub/central/Central';

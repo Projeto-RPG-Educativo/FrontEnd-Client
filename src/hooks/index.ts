@@ -14,5 +14,7 @@ export { useHub } from './services/useHub';
 export { useBattleScreen } from './screen/battle/useBattle'; 
 export { useQuestion } from './services/useQuestion';
 
-export { TutorialLogic } from './screen/tutorial/TutorialLogic';
+// Tutorial hooks
+export { useCutscene } from './screen/cutscene/useCutscene';
+
 export * from './services'

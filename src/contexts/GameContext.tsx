@@ -15,6 +15,23 @@ export type GameState =
   | 'DIALOGUE'
 ;
 
+export type TutorialState =
+  | 'NOT_STARTED'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  ;
+
+export type CutsceneState =
+  | 'TUTORIAL_INTRO'
+  | 'FIRST_BATTLE'
+  | 'LORE_EXPLANATION'
+  | 'HUB_EXPLANATION'
+  | 'GOBLIN_FAREWELL'
+  | 'GUILD_WELCOME'
+  ;
+
+
+
 export type HubState =
   | 'CENTRAL'
   | 'TOWER'

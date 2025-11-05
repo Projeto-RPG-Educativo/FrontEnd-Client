@@ -11,7 +11,7 @@ export const QuizScreenOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 11000; /* Acima de tudo: tutorial (10000), HUDs (9999) */
   animation: fadeIn 0.3s ease-in;
 
   @keyframes fadeIn {
@@ -63,6 +63,53 @@ export const QuizTitle = styled.h2`
   text-align: center;
 `;
 
+export const EnergySection = styled.div`
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+`;
+
+export const EnergyLabel = styled.div`
+  font-size: 0.8em;
+  color: #ffcc00;
+  text-align: center;
+  text-shadow: 1px 1px #000;
+`;
+
+export const EnergyBarContainer = styled.div`
+  background-color: #555;
+  border: 2px solid #333;
+  border-radius: 5px;
+  height: 20px;
+  overflow: hidden;
+  width: 100%;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+`;
+
+export const EnergyBar = styled.div<{ width: string }>`
+  background: linear-gradient(90deg, #f1c40f 0%, #f39c12 100%);
+  height: 100%;
+  width: ${props => props.width};
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px rgba(241, 196, 15, 0.8);
+  
+  /* Animação de brilho quando cheia */
+  ${props => props.width === '100%' && `
+    animation: energyGlow 1.5s ease-in-out infinite;
+    
+    @keyframes energyGlow {
+      0%, 100% {
+        box-shadow: 0 0 10px rgba(241, 196, 15, 0.8);
+      }
+      50% {
+        box-shadow: 0 0 20px rgba(241, 196, 15, 1);
+      }
+    }
+  `}
+`;
+
 // Caixa da pergunta
 export const QuestionBox = styled.div`
   align-items: center;
@@ -77,6 +124,21 @@ export const QuestionBox = styled.div`
   width: 90%;
   text-align: center;
   line-height: 1.5;
+`;
+
+export const LoadingText = styled.p`
+  font-size: 0.9em;
+  color: #ffcc00;
+  animation: loadingPulse 1.5s ease-in-out infinite;
+  
+  @keyframes loadingPulse {
+    0%, 100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
 `;
 
 // Mensagem de feedback (acerto/erro)
@@ -167,5 +229,10 @@ export const CloseQuizButton = styled.button`
     background-color: #f44336;
     border-color: #d32f2f;
     box-shadow: 0 0 10px #f44336;
+    transform: translateY(-2px);
+  }
+  
+  &:active {
+    transform: translateY(0);
   }
 `;

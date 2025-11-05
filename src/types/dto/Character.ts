@@ -16,6 +16,7 @@ export type Monster = {
   isBoss?: boolean;
   maxHp: number;
   image?: string;
+  isDefending?: boolean;
 };
 
 // --- RESPONSES (Recebimento da API) ---

@@ -53,7 +53,7 @@ export const BattleHeader = styled.div`
   position: absolute;
   top: 0;
   width: 100%;
-  z-index: 10;
+  z-index: 9999; /* Acima do overlay do tutorial */
 `;
 
 // Área central da batalha
@@ -110,6 +110,7 @@ export const TurnIndicator = styled.button<{ $isPlayerTurn: boolean }>`
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+  z-index: 9999; /* Acima do overlay do tutorial */
 
   &::after {
     content: '📜';
@@ -156,5 +157,5 @@ export const BattleActionBar = styled.div`
   padding: 0 30px;
   position: absolute;
   width: 100%;
-  z-index: 10;
+  z-index: 9999; /* Acima do overlay do tutorial */
 `;

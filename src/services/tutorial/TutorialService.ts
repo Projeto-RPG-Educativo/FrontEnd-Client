@@ -4,7 +4,7 @@ import type {
     ApiDialogueResponse,
     DialogueLine,
     Speaker
-} from "../../types"; 
+} from "../../types/dto/Tutorial.types"; 
 
 
 const mapApiToDialogue = (apiData: ApiDialogueResponse): DialogueLine => {

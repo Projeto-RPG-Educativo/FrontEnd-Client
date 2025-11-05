@@ -4,6 +4,8 @@ export const PlayerHudPanel = styled.div`
   align-items: center;
   display: flex;
   gap: 15px;
+  position: relative;
+
 `;
 
 export const PlayerPortrait = styled.div<{ $isDefending?: boolean }>`

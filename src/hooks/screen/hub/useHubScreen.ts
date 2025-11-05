@@ -6,7 +6,7 @@ import { useBattleScreen } from '../battle/useBattle';
  * Hook para gerenciar navegação no Hub
  */
 export const HubLogic = () => {
-  const { hubState, setHubState, setGameState, player } = useGame();
+  const { hubState, setHubState, setGameState, player, difficulty } = useGame();
   const { startBattle } = useBattleScreen();
 
 
@@ -36,7 +36,7 @@ export const HubLogic = () => {
     }
   }, [setHubState, goToHubCentral]);
 
-  const goToExit = useCallback(() => {
+  const goToExit = useCallback( () => {
     console.log('🚪 Saindo do hub e indo para batalha');
     
     if (!player?.id) {
@@ -44,11 +44,10 @@ export const HubLogic = () => {
       return;
     }
     // monsterId padrão = 1 (pode ser alterado depois)
-    const defaultMonsterId = 3;
-    const defaultDifficulty = 'facil';
-    
+    const defaultMonsterId = 1;
+    const defaultDifficulty = difficulty ?? "facil";
     console.log('⚔️ Iniciando batalha - Player:', player.id, 'Monster:', defaultMonsterId, 'Difficulty:', defaultDifficulty);
-    startBattle(defaultMonsterId, defaultDifficulty);
+    startBattle(defaultMonsterId, defaultDifficulty, player.id);
     setGameState('BATTLE');
   }, [setGameState, startBattle, player]);
 
