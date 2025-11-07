@@ -11,7 +11,7 @@ export const QuizScreenOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 11000; /* Acima de tudo: tutorial (10000), HUDs (9999) */
+  z-index: 9998; /* Acima de tudo: tutorial (10000), HUDs (9999) */
   animation: fadeIn 0.3s ease-in;
 
   @keyframes fadeIn {

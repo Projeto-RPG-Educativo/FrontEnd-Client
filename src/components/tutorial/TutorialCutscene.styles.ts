@@ -132,7 +132,7 @@ export const DialogueBox = styled.div`
   border: ${BORDER_THICKNESS} solid ${PIXEL_BORDER_COLOR};
   /* Borda pixelada */
   border-image: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 3H3V0H0V3Z' fill='%234a2512'/%3E%3Cpath d='M7 0H10V3H7V0Z' fill='%234a2512'/%3E%3Cpath d='M0 7H3V10H0V7Z' fill='%234a2512'/%3E%3Cpath d='M7 7H10V10H7V7Z' fill='%234a2512'/%3E%3C/svg%3E") 3 repeat;
-  
+    
   padding: 15px 20px;
   width: 100%;
   max-width: 1000px;

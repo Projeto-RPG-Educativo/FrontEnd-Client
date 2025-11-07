@@ -15,7 +15,7 @@
  * 8. COMPLETED → Tutorial finalizado
  */
 
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useGame } from './GameContext';
 import { startBattle } from '../services/battle/BattleService';
 import type { Player, Monster } from '../types';
@@ -93,12 +93,11 @@ const CUTSCENES: Record<CutsceneState, TutorialCutscene | null> = {
  */
 export const SPOTLIGHT_CONFIGS: Record<number, { x: number; y: number; radius: number }> = {
   // HUB_EXPLANATION - Diálogos 18-23
-  18: { x: 50, y: 30, radius: 220 },  // Torre da Sabedoria (centro-superior)
-  19: { x: 25, y: 50, radius: 180 },  // Arena de Batalhas (esquerda)
-  20: { x: 75, y: 50, radius: 180 },  // Taverna/Inn (direita)
-  21: { x: 35, y: 70, radius: 150 },  // Outro local (inferior-esquerda)
-  22: { x: 65, y: 70, radius: 150 },  // Outro local (inferior-direita)
-  // 23: Sem spotlight - Diálogo final de conclusão
+  18: { x: 28, y: 30, radius: 220 },  // Palco da retorica vulgo ARENA
+  19: { x: 35, y: 77, radius: 180 },  // LOJA
+  20: { x: 80, y: 72, radius: 180 },  // BIBLIOTECA
+  21: { x: 50, y: 30, radius: 180 },  // TORRE
+  22: { x: 50, y: 30, radius: 180 },  // TORRE 
 };
 
 // ==================== ETAPAS DO TUTORIAL DE BATALHA ====================
@@ -199,6 +198,16 @@ export const TutorialProvider: React.FC<TutorialProviderProps> = ({ children }) 
   const isBattleTutorialActive = useMemo(() => {
     return cutsceneState === 'FIRST_BATTLE' && currentBattleStep !== 'COMPLETE';
   }, [cutsceneState, currentBattleStep]);
+  
+  // Debug: Log mudanças de cutscene
+  useEffect(() => {
+    console.log('🎬 [Tutorial] Estado da Cutscene mudou:', {
+      cutsceneState,
+      currentCutscene: currentCutscene?.name,
+      isOverlay,
+      currentDialogueId
+    });
+  }, [cutsceneState, currentCutscene, isOverlay, currentDialogueId]);
   
   const currentBattleStepConfig = useMemo(() => {
     if (!isBattleTutorialActive) return null;
@@ -329,12 +338,13 @@ export const TutorialProvider: React.FC<TutorialProviderProps> = ({ children }) 
         break;
         
       case 'HUB_EXPLANATION':
-        // Após hub → Player entra na Tower
-        console.log('→ Transição: HUB_EXPLANATION → Preparando GUILD_WELCOME');
-        setCutsceneState('HUB_EXPLANATION');
-        setCurrentDialogueId(19);
+        // Após hub explanation → Tutorial completo! Player fica livre no Hub
+        console.log('→ Transição: HUB_EXPLANATION → Tutorial Completo');
+        console.log('✅ [Tutorial] Tutorial completamente finalizado!');
+        setCutsceneState('IDLE');
+        setCurrentDialogueId(null);
+        completeTutorial(); // Marca tutorial como completo
         setGameState('HUB');
-        // TODO: Código para fazer player entrar automaticamente na Tower
         break;
         
       case 'GUILD_WELCOME':

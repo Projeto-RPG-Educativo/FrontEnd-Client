@@ -92,21 +92,33 @@ const App: React.FC = () => {
 
       case 'HUB':
         return (
-          <ZoneRouter
-            hubState={hubState}
-            player={player}
-            onGoToCentral={goToHubCentral}
-            onGoToZone={goToHubZone}
-            onRest={() => { }}
-            onBuyItem={() => { }}
-            onStartQuizBattle={() => { }}
-            onBack={goToHubCentral}
-            setGameState={setGameState}
-            startBattle={(monsterId, player, difficulty) => {
-              if (!player) return Promise.resolve();
-              return startBattle(monsterId, difficulty, player.id);  // arrumar depois essa presepada aqui hehe
-            }}
-          />
+          <>
+            <ZoneRouter
+              hubState={hubState}
+              player={player}
+              onGoToCentral={goToHubCentral}
+              onGoToZone={goToHubZone}
+              onRest={() => { }}
+              onBuyItem={() => { }}
+              onStartQuizBattle={() => { }}
+              onBack={goToHubCentral}
+              setGameState={setGameState}
+              startBattle={(monsterId, player, difficulty) => {
+                if (!player) return Promise.resolve();
+                return startBattle(monsterId, difficulty, player.id);  // arrumar depois essa presepada aqui hehe
+              }}
+            />
+            {/* Renderiza a cutscene como overlay se necessário (HUB_EXPLANATION) */}
+            {isOverlay && currentCutscene && (
+              <TutorialCutscene
+                cutscene={currentCutscene}
+                selectedClass={player?.className ?? null}
+                onComplete={completeCutscene}
+                autoStart={true}
+                isOverlay={true}
+              />
+            )}
+          </>
         );
       case 'BATTLE':
         if (!player || !enemy) return null;

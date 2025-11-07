@@ -109,8 +109,10 @@ export const TurnIndicator = styled.button<{ $isPlayerTurn: boolean }>`
   animation: pulse 1.5s ease-in-out infinite;
   cursor: pointer;
   transition: all 0.3s ease;
-  position: relative;
-  z-index: 9999; /* Acima do overlay do tutorial */
+  top: 0;
+  right: 0;
+  position: absolute;
+  z-index: 9996; /* Acima do overlay do tutorial */
 
   &::after {
     content: '📜';
@@ -157,5 +159,5 @@ export const BattleActionBar = styled.div`
   padding: 0 30px;
   position: absolute;
   width: 100%;
-  z-index: 9999; /* Acima do overlay do tutorial */
+  z-index: 9997; /* Acima do overlay do tutorial */
 `;
