@@ -38,6 +38,9 @@ const TutorialCutscene: React.FC<CutsceneProps> = ({
 
   // Verifica se é tutorial de batalha (FIRST_BATTLE usa overlay e tem dialogueIds 7-13)
   const isBattleTutorial = isOverlay && cutscene.dialogueIds.includes(7);
+  
+  // Verifica se é tutorial do HUB (HUB_EXPLANATION usa overlay e tem dialogueIds 18-22)
+  const isHubTutorial = isOverlay && (cutscene.dialogueIds.includes(18) || cutscene.dialogueIds.includes(19) || cutscene.dialogueIds.includes(20) || cutscene.dialogueIds.includes(21) || cutscene.dialogueIds.includes(22));
 
   // Sincroniza o índice do diálogo com o passo atual do tutorial de batalha
   useEffect(() => {
@@ -211,23 +214,25 @@ const TutorialCutscene: React.FC<CutsceneProps> = ({
         {/* Personagens - só mostra em tela cheia (não overlay) */}
         {!isOverlay && (
           <S.CharactersContainer>
-            {/* Personagem da esquerda */}
-            <S.CharacterImage
-              src={getCharacterImage(currentDialogue.speaker)}
-              alt={currentDialogue.speaker}
-              $isActive={true}
-              $position="left"
-            />
+            {/* Personagem da esquerda em wrapper arredondado */}
+            <S.CharacterImageWrapper $isActive={true} $position="left">
+              <S.CharacterImage
+                src={getCharacterImage(currentDialogue.speaker)}
+                alt={currentDialogue.speaker}
+                $isActive={true}
+                $position="left"
+              />
+            </S.CharacterImageWrapper>
           </S.CharactersContainer>
         )}
 
         {/* Caixa de diálogo */}
-        <S.DialogueBox>
-          <S.SpeakerNameBox>
+        <S.DialogueBox $isBattleTutorial={isBattleTutorial} $isHubTutorial={isHubTutorial}>
+          <S.SpeakerNameBox $isBattleTutorial={isBattleTutorial} $isHubTutorial={isHubTutorial}>
             <S.SpeakerName>{currentDialogue.speaker}</S.SpeakerName>
           </S.SpeakerNameBox>
           
-          <S.DialogueText>{currentDialogue.content}</S.DialogueText>
+          <S.DialogueText $isBattleTutorial={isBattleTutorial} $isHubTutorial={isHubTutorial}>{currentDialogue.content}</S.DialogueText>
 
           <S.ProgressIndicator>
             {currentDialogueIndex + 1} / {dialogues.length}

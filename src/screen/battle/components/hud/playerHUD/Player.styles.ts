@@ -5,7 +5,6 @@ export const PlayerHudPanel = styled.div`
   display: flex;
   gap: 15px;
   position: relative;
-
 `;
 
 export const PlayerPortrait = styled.div<{ $isDefending?: boolean }>`

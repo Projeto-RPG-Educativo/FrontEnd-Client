@@ -2,7 +2,6 @@ import styled from 'styled-components';
 
 // HUD do inimigo
 export const EnemyHudContainer = styled.div`
-  align-items: center;
   background-color: transparent;
   border: none;
   box-shadow: none;
@@ -15,7 +14,6 @@ export const EnemyHudContainer = styled.div`
   padding: 0;
   width: 80%;
   position: relative;
-  z-index: 9999; /* Acima do overlay do tutorial */
 `;
 
 export const EnemyHud = styled.div<{ $isDefending?: boolean }>`
@@ -62,7 +60,7 @@ export const EnemyHudName = styled.h3`
   left: auto;
   top: auto;
   transform: none;
-  z-index: auto;
+  z-index: 9995;
 `;
 
 export const EnemyHudBarContainer = styled.div`
