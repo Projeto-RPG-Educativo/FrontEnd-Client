@@ -2,7 +2,6 @@ import styled from 'styled-components';
 
 // HUD do inimigo
 export const EnemyHudContainer = styled.div`
-  align-items: center;
   background-color: transparent;
   border: none;
   box-shadow: none;
@@ -14,14 +13,32 @@ export const EnemyHudContainer = styled.div`
   max-width: 900px;
   padding: 0;
   width: 80%;
+  position: relative;
 `;
 
-export const EnemyHud = styled.div`
+export const EnemyHud = styled.div<{ $isDefending?: boolean }>`
   background-color: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0;
+  border: ${props => props.$isDefending ? '2px solid #4CAF50' : 'none'};
+  border-radius: ${props => props.$isDefending ? '8px' : '0'};
+  box-shadow: ${props => props.$isDefending 
+    ? '0 0 15px rgba(76, 175, 80, 0.6)' 
+    : 'none'};
+  padding: ${props => props.$isDefending ? '10px' : '0'};
   width: 100%;
+  transition: all 0.3s ease;
+  
+  ${props => props.$isDefending && `
+    animation: defendPulse 1.5s ease-in-out infinite;
+    
+    @keyframes defendPulse {
+      0%, 100% {
+        box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+      }
+      50% {
+        box-shadow: 0 0 25px rgba(76, 175, 80, 0.9);
+      }
+    }
+  `}
 `;
 
 export const EnemyHudStats = styled.div`
@@ -43,7 +60,7 @@ export const EnemyHudName = styled.h3`
   left: auto;
   top: auto;
   transform: none;
-  z-index: auto;
+  z-index: 9995;
 `;
 
 export const EnemyHudBarContainer = styled.div`

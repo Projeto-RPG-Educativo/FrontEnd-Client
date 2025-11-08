@@ -1,5 +1,3 @@
-// src/components/Hub/Zones/TowerScreenStyles.ts
-
 import styled, { keyframes, css } from 'styled-components';
 
 // --- Estilos de Layout ---

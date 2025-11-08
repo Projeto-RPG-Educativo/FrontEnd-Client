@@ -19,3 +19,5 @@ export * from '../services/battle/BattleService';
 // ==================== Question Management ====================
 export * from '../services/question/QuestionService';
 
+// ==================== Tutorial Management ====================
+export * from '../services/tutorial/TutorialService';

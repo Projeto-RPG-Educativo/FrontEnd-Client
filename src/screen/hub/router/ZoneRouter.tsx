@@ -18,7 +18,7 @@ interface HubZoneRouterProps {
   onStartQuizBattle: () => void;
   onBack: () => void;
   setGameState: (state: 'HUB' | 'BATTLE' | 'MENU') => void;
-    startBattle: (monsterId: number, difficulty: "facil" | "medio" | "dificil") => Promise<void>;
+  startBattle: (monsterId: number, player: Player | null, difficulty: "facil" | "medio" | "dificil") => Promise<void>;
 }
 
 const HubZoneRouter: React.FC<HubZoneRouterProps> = (props) => {
@@ -81,7 +81,7 @@ const HubZoneRouter: React.FC<HubZoneRouterProps> = (props) => {
       ); 
 
     case 'EXIT':
-      props.startBattle && props.startBattle(1, 'facil');
+      props.startBattle && props.startBattle(1, props.player, 'facil');
       props.setGameState('BATTLE');
       return null;
 

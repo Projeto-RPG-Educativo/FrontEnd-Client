@@ -22,7 +22,6 @@ export const ClassLogic = () => {
   const [isLoadingClasses, setIsLoadingClasses] = useState(true);
   const [classError, setClassError] = useState<string | null>(null);
   const [selectedClass, setSelectedClass] = useState<FullClassData | null>(null);
-  // Removido isCharacterCreated, usar apenas creatingCharacter
   const [creatingCharacter, setCreatingCharacter] = useState(false);
 
   // 3. useEffect para buscar os dados do backend quando o hook é montado
@@ -101,7 +100,7 @@ export const ClassLogic = () => {
       // Criar personagem usando o service hook
       const newCharacter: CharacterResponse | null = await createCharacterService({
         Userid: typeof user.id === 'number' ? user.id : parseInt(user.id, 10),
-        classe: classData.name as ClassName // Nome: "tank", "mage", "fighter", etc.
+        classe: classData.name as ClassName 
       }) as CharacterResponse | null;
 
       if (newCharacter) {
@@ -126,7 +125,7 @@ export const ClassLogic = () => {
 
         // Ir para a próxima tela (Hub ou Diálogo inicial)
         setTimeout(() => {
-          setGameState('HUB');
+          setGameState('LOADING');
           setCreatingCharacter(false);
         }, 500);
       } else {

@@ -1,9 +1,10 @@
 
-import loading1 from '../../../asssets/Images/Loading/li1.jpg';
-import loading2 from '../../../asssets/Images/Loading/li2.jpg';
-import loading3 from '../../../asssets/Images/Loading/li3.jpg';
-import loading4 from '../../../asssets/Images/Loading/li4.jpg';
-import loading5 from '../../../asssets/Images/Loading/li5.jpg';
+import loading1 from '../../../assets/Images/loading/li1.jpg';
+import loading2 from '../../../assets/Images/loading/li2.jpg';
+import loading3 from '../../../assets/Images/loading/li3.jpg';
+import loading4 from '../../../assets/Images/loading/li4.jpg';
+import loading5 from '../../../assets/Images/loading/li5.jpg';
+
 
 export type LoadingImage =
   | 'loading1'

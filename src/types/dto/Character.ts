@@ -16,6 +16,7 @@ export type Monster = {
   isBoss?: boolean;
   maxHp: number;
   image?: string;
+  isDefending?: boolean;
 };
 
 // --- RESPONSES (Recebimento da API) ---
@@ -76,4 +77,8 @@ export interface FullClassData {
   stamina: number;
   strength: number;
   intelligence: number;
+}
+
+export interface CharacterImages {
+      [key: string]: string;
 }

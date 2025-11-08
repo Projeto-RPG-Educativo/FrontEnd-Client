@@ -4,12 +4,33 @@ import type { Player, Monster, ClassName, BattleStateResponse, Question, Questio
 export type Difficulty = QuestionDifficulty;
 
 export type GameState = 
+  | 'INTRO'
   | 'MENU'
   | 'CLASS_SELECTION'
+  | 'LOADING'
   | 'HUB'
   | 'BATTLE'
   | 'QUIZ'
+  | 'TUTORIAL'
+  | 'DIALOGUE'
 ;
+
+export type TutorialState =
+  | 'NOT_STARTED'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  ;
+
+export type CutsceneState =
+  | 'TUTORIAL_INTRO'
+  | 'FIRST_BATTLE'
+  | 'LORE_EXPLANATION'
+  | 'HUB_EXPLANATION'
+  | 'GOBLIN_FAREWELL'
+  | 'GUILD_WELCOME'
+  ;
+
+
 
 export type HubState =
   | 'CENTRAL'
@@ -20,6 +41,7 @@ export type HubState =
   | 'INN'
   | 'EXIT'
 ;
+
 interface GameContextType {
   // === ESTADOS PRINCIPAIS ===
   gameState: GameState;
@@ -57,6 +79,7 @@ interface GameContextType {
   goToClassSelection: () => void;
   goToQuiz: () => void;
   goToHubZone: (zone: HubState) => void;
+  goToTutorial: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -91,7 +114,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const goToBattle = () => setGameState('BATTLE');
   const goToClassSelection = () => setGameState('CLASS_SELECTION');
   const goToQuiz = () => setGameState('QUIZ');
-
+  const goToTutorial = () => setGameState('TUTORIAL');
   const goToHubZone = (zone: HubState) => setHubState(zone);
 
   const resetGameConfig = () => {
@@ -135,7 +158,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     goToClassSelection,
     goToHubZone,
     goToQuiz,
+    goToTutorial,
     resetGameConfig,
+
   };
     return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
 };

@@ -1,13 +1,15 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useBattle as useBattleService } from '../../services/useBattle';
 import { useQuestion } from '../../services/useQuestion';
 import type {
   BattleStateResponse,
   BattleActionRequest,
   SubmitAnswerRequest,
+  BattleLogEntry,
 } from '../../../types';
 import type { Question, QuestionFromBackend, Player, Monster } from '../../../types';
 import { useGame } from '../../../contexts/GameContext';
+import { useTutorial } from '../../../contexts';
 
 interface UseBattleReturn {
   // Estado da batalha
@@ -19,11 +21,13 @@ interface UseBattleReturn {
   showQuiz: boolean;
   loading: boolean;
   error: string | null;
+  isLoadingNewQuestion: boolean;
+  battleLogs: BattleLogEntry[];
 
-  // Ações de batalha
   startBattle: (
     monsterId: number,
-    difficulty: 'facil' | 'medio' | 'dificil'
+    difficulty: 'facil' | 'medio' | 'dificil',
+    characterId: number
   ) => Promise<void>;
   executeBattleAction: (action: BattleActionRequest) => Promise<void>;
   answerQuestion: (answer: string) => Promise<void>;
@@ -31,10 +35,24 @@ interface UseBattleReturn {
   closeQuiz: () => void;
   saveBattleProgress: () => Promise<void>;
   submitAnswer: (data: SubmitAnswerRequest) => Promise<BattleStateResponse | null>;
+  
+  executeMonsterTurn: () => Promise<void>;
+  skipTurn: () => Promise<void>;
+  checkAndExecuteMonsterTurn: () => Promise<void>;
+  showVictoryModal: boolean;
+  handleContinueBattle: () => void;
+  handleReturnToHub: () => void;
+  showBattleLog: boolean;
+  toggleBattleLog: () => void;
 }
 
 
 export const useBattleScreen = (): UseBattleReturn => {
+  const [isLoadingNewQuestion, setIsLoadingNewQuestion] = useState(false);
+  const [showVictoryModal, setShowVictoryModal] = useState(false);
+  const [battleLogs, setBattleLogs] = useState<BattleLogEntry[]>([]);
+  const [showBattleLog, setShowBattleLog] = useState(false);
+
   const {
     player,
     setPlayer,
@@ -48,9 +66,10 @@ export const useBattleScreen = (): UseBattleReturn => {
     setCurrentQuestion,
     gameMessage,
     setGameMessage,
-    gameState,
     setGameState,
   } = useGame();
+
+  const { isBattleTutorialActive, onMonsterDefeated } = useTutorial();
 
   const {
     startBattle: startBattleService,
@@ -59,6 +78,8 @@ export const useBattleScreen = (): UseBattleReturn => {
     saveProgress,
     loading: loadingBattle,
     error: errorBattle,
+    executeMonsterTurn: executeMonsterTurnService,
+    skipTurn: skipTurnService,
   } = useBattleService();
 
 
@@ -70,6 +91,27 @@ export const useBattleScreen = (): UseBattleReturn => {
 
   const loading = loadingBattle || loadingQuestion;
   const error = errorBattle?.message || errorQuestion?.message || null;
+
+  const addBattleLog = useCallback((
+    type: BattleLogEntry['type'],
+    actor: BattleLogEntry['actor'],
+    action: string,
+    message: string,
+    extra?: { damage?: number; heal?: number; energy?: number }
+  ) => {
+    const logEntry: BattleLogEntry = {
+      id: `${Date.now()}-${Math.random()}`,
+      timestamp: Date.now(),
+      type,
+      actor,
+      action,
+      message,
+      ...extra,
+    };
+    
+    setBattleLogs((prev) => [...prev, logEntry]);
+    console.log('📝 [BattleLog]', logEntry);
+  }, []);
 
   // Atualizar estado da batalha
   const updateBattleState = useCallback(
@@ -104,16 +146,135 @@ export const useBattleScreen = (): UseBattleReturn => {
         setGameMessage(newBattleState.message); 
       }
 
-      // Verificar fim de batalha
+      if (newBattleState.turnResult && newBattleState.turnResult.trim() !== '') {
+        let logType: BattleLogEntry['type'] = 'system';
+        let logActor: BattleLogEntry['actor'] = 'system';
+        let damage: number | undefined = undefined;
+        
+        const turnResultLower = newBattleState.turnResult.toLowerCase();
+        
+        // Detectar ações do jogador
+        if (turnResultLower.includes('você') || turnResultLower.includes('jogador')) {
+          logActor = 'player';
+          
+          if (turnResultLower.includes('atac')) {
+            logType = 'player-action';
+          } else if (turnResultLower.includes('defend')) {
+            logType = 'player-action';
+          } else if (turnResultLower.includes('habilidade') || turnResultLower.includes('skill')) {
+            logType = 'player-action';
+          }
+          
+          if (turnResultLower.includes('dano') && newBattleState.characterDamageDealt > 0) {
+            logType = 'damage';
+            damage = newBattleState.characterDamageDealt;
+          }
+        }
+        // Detectar ações do monstro
+        else if (turnResultLower.includes('monstro') || turnResultLower.includes(newBattleState.monster.nome.toLowerCase())) {
+          logActor = 'monster';
+          
+          if (turnResultLower.includes('atac')) {
+            logType = 'monster-action';
+          } else if (turnResultLower.includes('defend')) {
+            logType = 'monster-action';
+          } else if (turnResultLower.includes('habilidade') || turnResultLower.includes('skill')) {
+            logType = 'monster-action';
+          }
+          
+          if (turnResultLower.includes('dano') && newBattleState.monsterDamageDealt > 0) {
+            logType = 'damage';
+            damage = newBattleState.monsterDamageDealt;
+          }
+        }
+        
+        addBattleLog(
+          logType,
+          logActor,
+          'turn-action',
+          newBattleState.turnResult,
+          damage ? { damage } : undefined
+        );
+      }
+
+      if (newBattleState.characterActiveEffects && newBattleState.characterActiveEffects.length > 0) {
+        const previousEffects = battleState?.characterActiveEffects || [];
+        const newEffects = newBattleState.characterActiveEffects.filter(
+          effect => !previousEffects.some(prev => prev.type === effect.type)
+        );
+        
+        newEffects.forEach(effect => {
+          addBattleLog(
+            'effect',
+            'player',
+            'effect-applied',
+            `recebeu efeito: ${effect.description}`,
+          );
+        });
+      }
+
+      if (newBattleState.monsterActiveEffects && newBattleState.monsterActiveEffects.length > 0) {
+        const previousEffects = battleState?.monsterActiveEffects || [];
+        const newEffects = newBattleState.monsterActiveEffects.filter(
+          effect => !previousEffects.some(prev => prev.type === effect.type)
+        );
+        
+        newEffects.forEach(effect => {
+          addBattleLog(
+            'effect',
+            'monster',
+            'effect-applied',
+            `recebeu efeito: ${effect.description}`,
+          );
+        });
+      }
+
       if (newBattleState.isFinished) {
-        const vencedor =
-          newBattleState.winner === 'character'
-            ? 'Você venceu!'
-            : 'Você foi derrotado!';
+        const playerHP = newBattleState.character.hp;
+        const monsterHP = newBattleState.monster.hp;
+        
+        let vencedor = '';
+        let playerWon = false;
+        
+        if (playerHP > 0 && monsterHP <= 0) {
+          // Jogador venceu
+          vencedor = 'Você venceu!';
+          playerWon = true;
+          
+          // Se está no tutorial de batalha, notifica que o monstro morreu
+          if (isBattleTutorialActive) {
+            console.log('💀 [Battle] Monstro morreu durante tutorial');
+            onMonsterDefeated();
+          }
+        } else if (monsterHP > 0 && playerHP <= 0) {
+          // Monstro venceu
+          vencedor = 'Você foi derrotado!';
+          playerWon = false;
+        } else if (playerHP <= 0 && monsterHP <= 0) {
+          // Empate (ambos morreram)
+          vencedor = 'Empate! Ambos foram derrotados!';
+          playerWon = false;
+        } else {
+          // Caso inesperado - batalha finalizou mas ambos ainda tem HP
+          vencedor = 'Batalha finalizada!';
+          playerWon = playerHP > monsterHP;
+        }
+        
         setGameMessage(vencedor);
+        
+        addBattleLog(
+          'system',
+          'system',
+          'battle-end',
+          vencedor,
+        );
+        
+        if (playerWon) {
+          setShowVictoryModal(true);
+        }
       }
     },
-    [setBattleState, setPlayer, setEnemy, setGameMessage] 
+    [setBattleState, setPlayer, setEnemy, setGameMessage, battleState, addBattleLog] 
   );
 
   // Iniciar batalha
@@ -132,10 +293,19 @@ export const useBattleScreen = (): UseBattleReturn => {
         const result = await startBattleService({
           monsterId: Number(monsterId),
           difficulty,
+          characterId: player?.id || 0,
         });
         if (result) {
           console.log('✅ [useBattleScreen] Batalha iniciada com sucesso:', result);
-          updateBattleState(result); // <-- Atualiza o context
+          updateBattleState(result);
+          
+          setBattleLogs([]);
+          addBattleLog(
+            'system',
+            'system',
+            'start-battle',
+            `Batalha iniciada contra ${result.monster.nome} (${difficulty})`,
+          );
         } else {
           console.error('❌ [useBattleScreen] Resultado da batalha está vazio');
         }
@@ -143,7 +313,7 @@ export const useBattleScreen = (): UseBattleReturn => {
         console.error('❌ [useBattleScreen] Erro ao iniciar batalha:', error);
       }
     },
-    [startBattleService, updateBattleState]
+    [startBattleService, updateBattleState, addBattleLog]
   );
 
   // Executar ação de batalha
@@ -153,9 +323,11 @@ export const useBattleScreen = (): UseBattleReturn => {
         console.error('Batalha não iniciada');
         return;
       }
+      
       const result = await executeAction(action);
       if (result) {
-        updateBattleState(result); 
+        updateBattleState(result);
+        // O log será criado pelo updateBattleState usando o turnResult do backend
       }
     },
     [battleState, executeAction, updateBattleState]
@@ -191,8 +363,8 @@ export const useBattleScreen = (): UseBattleReturn => {
 
       setCurrentQuestion(mappedQuestion); 
       setShowQuiz(true); 
-      setGameState('QUIZ'); 
-      console.log(gameState);
+      
+      console.log('📚 [useBattleScreen] Quiz aberto como overlay');
     }
   }, [
     fetchRandomQuestion,
@@ -200,14 +372,14 @@ export const useBattleScreen = (): UseBattleReturn => {
     player,
     setCurrentQuestion,
     setShowQuiz,
-    setGameState, 
   ]);
 
   const closeQuiz = useCallback(() => {
     setShowQuiz(false); 
     setCurrentQuestion(null); 
-    setGameState('BATTLE'); 
-  }, [setShowQuiz, setCurrentQuestion, setGameState]);
+ 
+    console.log('📚 [useBattleScreen] Quiz fechado');
+  }, [setShowQuiz, setCurrentQuestion]);
 
  
   const answerQuestion = useCallback(
@@ -227,20 +399,62 @@ export const useBattleScreen = (): UseBattleReturn => {
         const newBattleState = await submitAnswer(requestData);
 
         if (newBattleState) {
+          if (newBattleState.message) {
+            const isCorrect = newBattleState.message.includes('Correto') || 
+                             newBattleState.message.includes('correta') ||
+                             newBattleState.message.includes('correto');
+            
+            addBattleLog(
+              'quiz',
+              'player',
+              'answer-question',
+              newBattleState.message,
+              isCorrect ? { energy: 2 } : undefined
+            );
+          }
           
           updateBattleState(newBattleState);
         }
 
+        setIsLoadingNewQuestion(true);
+        console.log('🔄 [useBattleScreen] Buscando nova pergunta após resposta...');
         
-        setTimeout(() => {
-          closeQuiz();
-        }, 2000); 
+        if (!battleState || !player) {
+          console.error('❌ [useBattleScreen] Estado de batalha ou jogador não disponível para buscar nova pergunta.');
+          setIsLoadingNewQuestion(false);
+          return;
+        }
+
+        const questionRequestData = {
+          difficulty: battleState.difficulty,
+          playerLevel: player.level ?? 1,
+        };
+
+        const newQuestion: QuestionFromBackend | null = await fetchRandomQuestion(questionRequestData);
+        
+        if (newQuestion) {
+          const mappedQuestion: Question = {
+            id: newQuestion.id,
+            text: newQuestion.text,
+            options: newQuestion.options,
+            correctAnswer: newQuestion.correctAnswer,
+            difficulty: newQuestion.difficulty,
+            category: newQuestion.category,
+            points: newQuestion.points,
+          };
+
+          setCurrentQuestion(mappedQuestion);
+          console.log('✅ [useBattleScreen] Nova pergunta carregada:', mappedQuestion);
+        } else {
+          console.warn('⚠️ [useBattleScreen] Nenhuma nova pergunta disponível');
+        }
+
+        setIsLoadingNewQuestion(false);
+
       } catch (err) {
         console.error('❌ [useBattleScreen] Erro ao submeter resposta:', err);
-        setGameMessage('Erro ao processar sua resposta.'); 
-        setTimeout(() => {
-          closeQuiz();
-        }, 2000);
+        setGameMessage('Erro ao processar sua resposta.');
+        setIsLoadingNewQuestion(false);
       }
     },
     [
@@ -248,8 +462,11 @@ export const useBattleScreen = (): UseBattleReturn => {
       currentQuestion,
       submitAnswer,
       updateBattleState,
-      closeQuiz,
-      setGameMessage, 
+      setGameMessage,
+      player,
+      fetchRandomQuestion,
+      setCurrentQuestion,
+      setIsLoadingNewQuestion,
     ]
   );
 
@@ -267,6 +484,78 @@ export const useBattleScreen = (): UseBattleReturn => {
     });
   }, [battleState, saveProgress]);
 
+  const handleExecuteMonsterTurn = useCallback(async () => {
+    console.log('👹 [useBattleScreen] Executando turno do monstro');
+    try {
+      const result = await executeMonsterTurnService();
+      if (result) {
+        console.log('✅ [useBattleScreen] Turno do monstro executado:', result);
+        updateBattleState(result);
+      }
+    } catch (error) {
+      console.error('❌ [useBattleScreen] Erro ao executar turno do monstro:', error);
+    }
+  }, [executeMonsterTurnService, updateBattleState]);
+
+  const handleSkipTurn = useCallback(async () => {
+    console.log('⏭️ [useBattleScreen] Passando turno (atordoado)');
+    try {
+      const result = await skipTurnService();
+      if (result) {
+        console.log('✅ [useBattleScreen] Turno passado:', result);
+        updateBattleState(result);
+      }
+    } catch (error) {
+      console.error('❌ [useBattleScreen] Erro ao passar turno:', error);
+    }
+  }, [skipTurnService, updateBattleState]);
+
+  const checkAndExecuteMonsterTurn = useCallback(async () => {
+    if (battleState?.waitingForMonsterTurn) {
+      console.log('🔄 [useBattleScreen] Aguardando turno do monstro detectado, executando...');
+      await handleExecuteMonsterTurn();
+    }
+  }, [battleState, handleExecuteMonsterTurn]);
+
+  const handleContinueBattle = useCallback(async () => {
+    console.log('⚔️ [useBattleScreen] Jogador escolheu continuar a batalha');
+    setShowVictoryModal(false);
+    
+    if (battleState && player) {
+      const nextMonsterId = battleState.monster.id + 1;
+      const difficulty = battleState.difficulty as 'facil' | 'medio' | 'dificil';
+      
+      console.log(`🔄 [useBattleScreen] Iniciando nova batalha: Próximo Monstro ID ${nextMonsterId}, Dificuldade: ${difficulty}`);
+      
+      try {
+        await startBattle(nextMonsterId, difficulty);
+      } catch (error) {
+        console.error('❌ [useBattleScreen] Erro ao iniciar nova batalha:', error);
+        setGameMessage('Erro ao iniciar nova batalha. Retornando ao hub.');
+        setTimeout(() => {
+          setGameState('HUB');
+        }, 2000);
+      }
+    } else {
+      console.error('❌ [useBattleScreen] Estado de batalha ou jogador não disponível');
+      setGameState('HUB');
+    }
+  }, [battleState, player, startBattle, setGameState, setGameMessage]);
+
+  const handleReturnToHub = useCallback(() => {
+    console.log('🏠 [useBattleScreen] Jogador escolheu voltar ao hub');
+    setShowVictoryModal(false);
+    setGameState('HUB');
+    setBattleState(null);
+    setEnemy(null);
+    setCurrentQuestion(null);
+    setShowQuiz(false);
+  }, [setGameState, setBattleState, setEnemy, setCurrentQuestion, setShowQuiz]);
+
+  const toggleBattleLog = useCallback(() => {
+    setShowBattleLog(prev => !prev);
+  }, []);
+
   return {
     battleState,
     player,
@@ -276,6 +565,10 @@ export const useBattleScreen = (): UseBattleReturn => {
     showQuiz, 
     loading,
     error,
+    isLoadingNewQuestion,
+    showVictoryModal,
+    battleLogs,
+    showBattleLog,
     startBattle,
     executeBattleAction,
     answerQuestion,
@@ -283,5 +576,11 @@ export const useBattleScreen = (): UseBattleReturn => {
     closeQuiz,
     saveBattleProgress,
     submitAnswer,
+    executeMonsterTurn: handleExecuteMonsterTurn,
+    skipTurn: handleSkipTurn,
+    checkAndExecuteMonsterTurn,
+    handleContinueBattle,
+    handleReturnToHub,
+    toggleBattleLog,
   };
 };

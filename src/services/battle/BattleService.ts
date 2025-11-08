@@ -51,6 +51,70 @@ export const submitAnswer = async (
 };
 
 /**
+ * Executa o turno do monstro
+ */
+export const executeMonsterTurn = async (): Promise<BattleStateResponse> => {
+  console.log('👹 [BattleService] Executando turno do monstro');
+  
+  try {
+    const response = await api.post<BattleStateResponse>('/battle/monster-turn');
+    console.log('✅ [BattleService] Turno do monstro executado:', response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error('❌ [BattleService] Erro ao executar turno do monstro:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
+    throw error;
+  }
+};
+
+/**
+ * Passa o turno quando o jogador está atordoado
+ */
+export const skipTurn = async (): Promise<BattleStateResponse> => {
+  console.log('⏭️ [BattleService] Passando turno (atordoado)');
+  
+  try {
+    const response = await api.post<BattleStateResponse>('/battle/skip-turn');
+    console.log('✅ [BattleService] Turno passado:', response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error('❌ [BattleService] Erro ao passar turno:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
+    throw error;
+  }
+};
+
+/**
+ * Consulta o estado atual da batalha
+ */
+export const getCurrentBattle = async (): Promise<BattleStateResponse | null> => {
+  console.log('🔍 [BattleService] Consultando batalha atual');
+  
+  try {
+    const response = await api.get<BattleStateResponse>('/battle/current');
+    console.log('✅ [BattleService] Batalha atual:', response.data);
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 204) {
+      console.log('ℹ️ [BattleService] Nenhuma batalha ativa');
+      return null;
+    }
+    console.error('❌ [BattleService] Erro ao consultar batalha atual:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
+    throw error;
+  }
+};
+
+/**
  * Salva o progresso da batalha
  */
 export const saveBattleProgress = async (
@@ -67,5 +131,8 @@ export default {
   startBattle,
   performBattleAction,
   submitAnswer,
+  executeMonsterTurn,
+  skipTurn,
+  getCurrentBattle,
   saveBattleProgress,
 };
