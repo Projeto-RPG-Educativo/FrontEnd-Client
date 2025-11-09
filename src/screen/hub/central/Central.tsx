@@ -3,6 +3,7 @@ import { type Player } from '../../../types';
 import { HubContainer, Hotspot, StretchedImage } from '../Hub.styles'; 
 import { HUB_IMAGES } from '../../../constants/assets/background/HubAssets';
 import { HubLogic } from '../../../hooks/screen/hub/useHubScreen';
+import QuestTracker from '../../quests/components/tracker/QuestTracker';
 
 // --- Tipagem ---
 type HubZone = 'TOWER' | 'ARENA' | 'LIBRARY' | 'SHOP' | 'EXIT';
@@ -40,6 +41,9 @@ const Central: React.FC<CentralProps> = ({ player }) => {
         onError={handleImageError}
         loading="lazy"
       />
+
+      {/* Quest Tracker - Canto Superior Esquerdo */}
+      {player && <QuestTracker characterId={player.id} />}
     
       {/* 1. O Palco da Retórica (ARENA) */}
       <Hotspot 
