@@ -26,6 +26,10 @@ export { default as ClassRoom } from './hub/tower/floors/F3/ClassRoom';
 export { default as Laboratory } from './hub/tower/floors/F4/Laboratory';
 export { default as TowerMasterRoom } from './hub/tower/floors/F5/TowerMasterRoom';
 
+// Quest System
+export { QuestJournal, QuestBoard } from './quests';
+export { QuestTracker } from './quests/components';
+
 export { useLoadGame } from '../hooks/screen/menu/useLoadGame';
 export { useNewGame } from '../hooks/screen/menu/useNewGame';
 
