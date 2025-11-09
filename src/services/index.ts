@@ -21,3 +21,9 @@ export * from '../services/question/QuestionService';
 
 // ==================== Tutorial Management ====================
 export * from '../services/tutorial/TutorialService';
+
+// ==================== Quest Management ====================
+export * from '../services/quest/QuestService';
+
+// ==================== Achievement Management ====================
+export * from '../services/achievement/AchievementService';
