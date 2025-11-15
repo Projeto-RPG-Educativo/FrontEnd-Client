@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: https://backend-java-vb8r.onrender.com/api
+    container_name: rpg-educativo-frontend
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    # Se precisar passar variáveis de ambiente do arquivo .env
+    # env_file:
+    #   - .env

@@ -30,7 +30,7 @@ import type {
   TutorialProviderProps
 } from '../types/dto/Tutorial.types';
 import fundo1 from '../assets/Images/cutScene/CutScene1.jpg';
-import fundo2 from '../assets/Images/cutScene/CutScene2.jpg';
+import fundo2 from '../assets/Images/cutScene/cutScene2.jpg';
 
 // ==================== CONFIGURAÇÃO DAS CUTSCENES ====================
 
